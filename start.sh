@@ -4,7 +4,7 @@
 # export SERVER_PORT==${SERVER_PORT:-''}
 export VMESS_WSPATH=${VMESS_WSPATH:-'startvm'}
 export VLESS_WSPATH=${VLESS_WSPATH:-'startvl'}
-export CF_IP=$CF_IP:-'www.who.int'}
+export CF_IP=${CF_IP:-'www.who.int'}
 export UUID=${UUID:-'a9d16cf3-d2ac-4ea6-b354-fb42dda42b7a'}
 export FLIE_PATH=${FLIE_PATH:-'/tmp/'}
 export SUB_NAME="$SUB_NAME"

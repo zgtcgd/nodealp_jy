@@ -81,7 +81,7 @@ function keep_web_alive() {
     }
   });
 }
-setInterval(keep_web_alive, 10 * 1000);
+setInterval(keep_web_alive, 30 * 1000);
 
 //Argo保活
 function keep_argo_alive() {
