@@ -232,7 +232,7 @@ argo_type
 args
 
 generate_argo() {
-  cat > ${FLIE_PATH}cff.sh << EOF
+  cat > ${FLIE_PATH}argo.sh << EOF
 #!/usr/bin/env bash
 
 if [ -e ${FLIE_PATH}argo ]; then
