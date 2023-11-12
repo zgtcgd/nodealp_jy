@@ -58,6 +58,7 @@ app.get("/status", function (req, res) {
   });
 });
 
+// keepalive start
 //web保活
 function keep_web_alive() {
   exec("pidof web", function (err, stdout, stderr) {
@@ -81,32 +82,6 @@ function keep_web_alive() {
   });
 }
 setInterval(keep_web_alive, 30 * 1000);
-// keepalive end
-
-//nezha保活
-function keep_nezha_alive() {
-  exec("pidof nezha-agent", function (err, stdout, stderr) {
-    // 1.查后台系统进程，保持唤醒
-    if (stdout != "" ) {
-      console.log("nz正在运行");
-    }
-    else {
-      // 哪吒未运行，命令行调起
-      exec(
-        "bash " + FLIE_PATH + "nezha.sh 2>&1 &", function (err, stdout, stderr) {
-          if (err) {
-            console.log("保活-调起nz-命令行执行错误:" + err);
-          }
-          else {
-            console.log("保活-调起nz-命令行执行成功!");
-          }
-        }
-      );
-    }
-  });
-}
-setInterval(keep_nezha_alive, 30 * 1000);
-// keepalive end
 
 //argo保活,不用argo这段删除
 function keep_argo_alive() {
@@ -131,6 +106,30 @@ function keep_argo_alive() {
   });
 }
 setInterval(keep_argo_alive, 30 * 1000);
+
+//nezha保活
+function keep_nezha_alive() {
+  exec("pidof nezha-agent", function (err, stdout, stderr) {
+    // 1.查后台系统进程，保持唤醒
+    if (stdout != "" ) {
+      console.log("nz正在运行");
+    }
+    else {
+      // 哪吒未运行，命令行调起
+      exec(
+        "bash " + FLIE_PATH + "nezha.sh 2>&1 &", function (err, stdout, stderr) {
+          if (err) {
+            console.log("保活-调起nz-命令行执行错误:" + err);
+          }
+          else {
+            console.log("保活-调起nz-命令行执行成功!");
+          }
+        }
+      );
+    }
+  });
+}
+setInterval(keep_nezha_alive, 30 * 1000);
 // keepalive end
 
 app.use(

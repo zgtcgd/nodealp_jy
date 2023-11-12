@@ -10,7 +10,7 @@ export FLIE_PATH=${FLIE_PATH:-'/tmp/'}
 export SUB_NAME="$SUB_NAME"
 
 # 设置订阅上传地址
-# export SUB_URL=${SUB_URL:-'https://mytg-wljy.hf.space/upload-a4aa34be-4373-4fdb-bff7-0a9c23405dac'}
+SUB_URL="$SUB_URL"
 
 # 哪吒的四个参数
 NEZHA_SERVER="$NEZHA_SERVER"
