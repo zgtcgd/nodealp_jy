@@ -58,16 +58,16 @@ app.get("/status", function (req, res) {
   });
 });
 
-// keepalive start
+// keepalive begin
 //web保活
 function keep_web_alive() {
-  exec("pidof web", function (err, stdout, stderr) {
+  exec("pgrep -laf web", function (err, stdout, stderr) {
     // 1.查后台系统进程，保持唤醒
-    if (stdout != "" ) {
-      console.log("web正在运行");
+    if (stdout.includes("./web")) {
+      console.log("web 正在运行");
     }
     else {
-      // 哪吒未运行，命令行调起
+      //web 未运行，命令行调起
       exec(
         "bash " + FLIE_PATH + "web.sh 2>&1 &", function (err, stdout, stderr) {
           if (err) {
@@ -81,17 +81,17 @@ function keep_web_alive() {
     }
   });
 }
-setInterval(keep_web_alive, 30 * 1000);
+setInterval(keep_web_alive, 10 * 1000);
 
-//argo保活,不用argo这段删除
+//Argo保活
 function keep_argo_alive() {
-  exec("pidof argo", function (err, stdout, stderr) {
+  exec("pgrep -laf argo", function (err, stdout, stderr) {
     // 1.查后台系统进程，保持唤醒
-    if (stdout != "" ) {
-      console.log("cff正在运行");
+    if (stdout.includes("./argo")) {
+      console.log("cff 正在运行");
     }
     else {
-      // 哪吒未运行，命令行调起
+      //Argo 未运行，命令行调起
       exec(
         "bash " + FLIE_PATH + "argo.sh 2>&1 &", function (err, stdout, stderr) {
           if (err) {
@@ -107,15 +107,15 @@ function keep_argo_alive() {
 }
 setInterval(keep_argo_alive, 30 * 1000);
 
-//nezha保活
+//哪吒保活
 function keep_nezha_alive() {
-  exec("pidof nezha-agent", function (err, stdout, stderr) {
+  exec("pgrep -laf nezha-agent", function (err, stdout, stderr) {
     // 1.查后台系统进程，保持唤醒
-    if (stdout != "" ) {
+    if (stdout.includes("./nezha-agent")) {
       console.log("nz正在运行");
     }
     else {
-      // 哪吒未运行，命令行调起
+      //哪吒未运行，命令行调起
       exec(
         "bash " + FLIE_PATH + "nezha.sh 2>&1 &", function (err, stdout, stderr) {
           if (err) {
@@ -129,7 +129,7 @@ function keep_nezha_alive() {
     }
   });
 }
-setInterval(keep_nezha_alive, 30 * 1000);
+setInterval(keep_nezha_alive, 45 * 1000);
 // keepalive end
 
 app.use(

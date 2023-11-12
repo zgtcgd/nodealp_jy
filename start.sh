@@ -10,7 +10,7 @@ export FLIE_PATH=${FLIE_PATH:-'/tmp/'}
 export SUB_NAME="$SUB_NAME"
 
 # 设置订阅上传地址
-SUB_URL="$SUB_URL"
+export SUB_URL="$SUB_URL"
 
 # 哪吒的四个参数
 NEZHA_SERVER="$NEZHA_SERVER"
