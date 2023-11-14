@@ -2,11 +2,8 @@ const port = process.env.PORT || 3000;
 const FLIE_PATH = process.env.FLIE_PATH || '/tmp/';
 const express = require("express");
 const app = express();
-const http = require('http');
 const fs = require('fs');
-const { spawn } = require('child_process');
 const { createProxyMiddleware } = require("http-proxy-middleware");
-const { execFile } = require('child_process');
 var exec = require("child_process").exec;
 
 const startScriptPath = './start.sh';
