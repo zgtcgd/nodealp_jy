@@ -4,7 +4,9 @@ WORKDIR /app
 
 COPY index.js package.json start.sh upload.sh /app/
 
-EXPOSE 3000
+ARG PORT=${PORT:-'3000'}
+ENV PORT=${PORT:-'3000'}
+EXPOSE $PORT
 
 ARG FLIE_PATH=${FLIE_PATH:-'/tmp/'}
 ENV FLIE_PATH=${FLIE_PATH:-'/tmp/'}
