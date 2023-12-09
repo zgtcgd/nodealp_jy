@@ -326,8 +326,9 @@ rm ${FILE_PATH}encode.txt
 
 if [ -z "$SUB_URL" ]; then
 list
+
 else
 list
-chmod +x upload.sh
+
 bash upload.sh >/dev/null 2>&1 &
 fi
