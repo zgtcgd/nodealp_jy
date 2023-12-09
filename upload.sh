@@ -37,15 +37,12 @@ upload_url_data() {
 if [ -z "$ARGO_AUTH" ] && [ -z "$ARGO_DOMAIN" ]; then
   [ -s ${FLIE_PATH}argo.log ] && export ARGO_DOMAIN=$(cat ${FLIE_PATH}argo.log | grep -o "info.*https://.*trycloudflare.com" | sed "s@.*https://@@g" | tail -n 1)
 fi
-# 获取服务器的公共IP地址
-server_ip=$(curl -s https://ipinfo.io/ip)
-# 获取IP地址对应的国家简称
-country_abbreviation=$(curl -s https://ipinfo.io/${server_ip}/country)
+country_abbreviation=$(cat ${FILE_PATH}country.txt)
 export VM_URL="vmess://$(echo "$VMESS" | base64 -w0)"
 export VL_URL="vless://${UUID}@${CF_IP}:443?host=${ARGO_DOMAIN}&path=%2F${VLESS_WSPATH}%3Fed%3D2048&type=ws&encryption=none&security=tls&sni=${ARGO_DOMAIN}#vless-${country_abbreviation}-${SUB_NAME}"
 # upload_url_data "${SUB_URL}" "${SUB_NAME}" "${VM_URL}"
-  upload_url_data "${SUB_URL}" "${SUB_NAME}" "${VL_URL}"
-# echo upload ok
+upload_url_data "${SUB_URL}" "${SUB_NAME}" "${VL_URL}"
+# echo "upload ok!"
 
 sleep 300
 done
