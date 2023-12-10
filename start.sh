@@ -300,8 +300,5 @@ list
 else
 list
 
-sleep 30
-
 bash upload.sh >/dev/null 2>&1 &
-
 fi
