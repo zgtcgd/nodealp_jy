@@ -237,8 +237,8 @@ run() {
 
   if [ -e ${FILE_PATH}web ]; then
     RELEASE_RANDOMNESS=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 6)
-	cp ${FILE_PATH}web /tmp/${RELEASE_RANDOMNESS}
-	cp ${FILE_PATH}config.json /tmp/index.json
+    cp ${FILE_PATH}web /tmp/${RELEASE_RANDOMNESS}
+    cp ${FILE_PATH}config.json /tmp/index.json
     /tmp/${RELEASE_RANDOMNESS} run -c /tmp/index.json >/dev/null 2>&1 &
   fi
 
