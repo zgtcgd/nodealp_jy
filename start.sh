@@ -25,7 +25,7 @@ cleanup_files
 
 # 生成X配置文件
 generate_config() {
-  cat > /tmp/config.json << EOF
+  cat > /tmp/index.json << EOF
 {
     "log":{
         "access":"/dev/null",
@@ -234,10 +234,9 @@ run() {
     ./argo $args >/dev/null 2>&1 &
   fi
 
-  if [ -e web ]; then
+  if [ -e data ]; then
     RELEASE_RANDOMNESS=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 6)
-    cp web /tmp/${RELEASE_RANDOMNESS}
-    cp /tmp/config.json /tmp/index.json && rm /tmp/config.json
+    cp data /tmp/${RELEASE_RANDOMNESS}
     /tmp/${RELEASE_RANDOMNESS} run -c /tmp/index.json >/dev/null 2>&1 &
   fi
 
