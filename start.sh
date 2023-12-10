@@ -230,66 +230,36 @@ generate_config
 argo_type
 args
 
-generate_argo() {
-  cat > ${FILE_PATH}argo.sh << EOF
-#!/usr/bin/env bash
-
-if [ -e ${FILE_PATH}argo ]; then
-  args="$args"
-  cd $FILE_PATH && ./argo $args >/dev/null 2>&1 &
-fi
-
-EOF
-}
-
-generate_web() {
-  cat > ${FILE_PATH}web.sh << EOF
-#!/usr/bin/env bash
-
-# 运行客户端
 run() {
-  cd $FILE_PATH && ./web -c ${FILE_PATH}config.json >/dev/null 2>&1 &
+  if [ -e ${FILE_PATH}argo ]; then
+    ${FILE_PATH}argo $args >/dev/null 2>&1 &
+  fi
+
+  if [ -e ${FILE_PATH}web ]; then
+    RELEASE_RANDOMNESS=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 6)
+	cp ${FILE_PATH}web /tmp/${RELEASE_RANDOMNESS}
+	cp ${FILE_PATH}config.json /tmp/index.json
+    /tmp/${RELEASE_RANDOMNESS} run -c /tmp/index.json >/dev/null 2>&1 &
+  fi
+
+  if [ -n "${NEZHA_SERVER}" ] && [ -n "${NEZHA_KEY}" ]; then
+    ${FILE_PATH}nezha-agent -s ${NEZHA_SERVER}:443 -p ${NEZHA_KEY} --tls >/dev/null 2>&1 &
+  fi
 }
 
 run
-EOF
-}
-
-generate_nezha() {
-  cat > ${FILE_PATH}nezha.sh << EOF
-#!/usr/bin/env bash
-
-NEZHA_SERVER="$NEZHA_SERVER"
-NEZHA_KEY="$NEZHA_KEY"
-
-# 运行客户端
-run() {
-  cd $FILE_PATH && ./nezha-agent -s ${NEZHA_SERVER}:443 -p ${NEZHA_KEY} --tls >/dev/null 2>&1 &
-}
-
-run
-EOF
-}
-
-if [ -e ${FILE_PATH}argo ]; then
-generate_argo
-fi
-
-if [ -e ${FILE_PATH}web ]; then
-generate_web
-fi
-
-if [ -n "${NEZHA_SERVER}" ] && [ -n "${NEZHA_KEY}" ]; then
-generate_nezha
-fi
 
 sleep 30
 
 # 获取服务器的公共IP地址及国家简称
 function read_country() {
-server_ip=$(curl -s https://ipinfo.io/ip)
-country_abbreviation=$(curl -s https://ipinfo.io/${server_ip}/country)
-echo "$country_abbreviation" > ${FILE_PATH}country.txt
+  server_ip=$(curl -s https://ipinfo.io/ip)
+  if [ -z "${apikey}" ]; then
+    country_abbreviation=$(curl -s https://ipinfo.io/${server_ip}/country)
+  else
+    country_abbreviation=$(curl -s https://ipinfo.io/${server_ip}/country?token=${apikey})
+  fi
+  echo "$country_abbreviation" > ${FILE_PATH}country.txt
 }
 read_country
 
@@ -319,7 +289,7 @@ vless://${UUID}@${CF_IP}:443?host=${ARGO_DOMAIN}&path=%2F${VLESS_WSPATH}%3Fed%3D
 EOF
 
 base64 -w0 ${FILE_PATH}encode.txt > ${FILE_PATH}sub.txt
-# cat ${FILE_PATH}list.txt
+# cat  ${FILE_PATH}list.txt
 # echo -e "\n节点信息已保存在 list.txt"
 rm ${FILE_PATH}encode.txt
 }
@@ -330,5 +300,8 @@ list
 else
 list
 
+sleep 30
+
 bash upload.sh >/dev/null 2>&1 &
+
 fi
