@@ -5,7 +5,6 @@ VLESS_WSPATH=$VLESS_WSPATH
 CF_IP=$CF_IP
 SUB_NAME=$SUB_NAME
 SUB_URL=$SUB_URL
-FILE_PATH=$FILE_PATH
 
 while true
 do
@@ -35,14 +34,14 @@ upload_url_data() {
 }
 
 if [ -z "$ARGO_AUTH" ] && [ -z "$ARGO_DOMAIN" ]; then
-  [ -s ${FILE_PATH}argo.log ] && export ARGO_DOMAIN=$(cat ${FILE_PATH}argo.log | grep -o "info.*https://.*trycloudflare.com" | sed "s@.*https://@@g" | tail -n 1)
+  [ -s /tmp/argo.log ] && export ARGO_DOMAIN=$(cat /tmp/argo.log | grep -o "info.*https://.*trycloudflare.com" | sed "s@.*https://@@g" | tail -n 1)
 fi
-country_abbreviation=$(cat ${FILE_PATH}country.txt)
+country_abbreviation=$(cat /tmp/country.txt)
 export VM_URL="vmess://$(echo "$VMESS" | base64 -w0)"
 export VL_URL="vless://${UUID}@${CF_IP}:443?host=${ARGO_DOMAIN}&path=%2F${VLESS_WSPATH}%3Fed%3D2048&type=ws&encryption=none&security=tls&sni=${ARGO_DOMAIN}#vless-${country_abbreviation}-${SUB_NAME}"
 # upload_url_data "${SUB_URL}" "${SUB_NAME}" "${VM_URL}"
 upload_url_data "${SUB_URL}" "${SUB_NAME}" "${VL_URL}"
-# echo “upload ok！”
+# echo "upload ok!"
 
 sleep 300
 done

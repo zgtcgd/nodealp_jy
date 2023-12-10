@@ -8,15 +8,13 @@ ARG PORT=${PORT:-'3000'}
 ENV PORT=${PORT:-'3000'}
 EXPOSE $PORT
 
-ARG FLIE_PATH=${FLIE_PATH:-'/tmp/'}
-ENV FLIE_PATH=${FLIE_PATH:-'/tmp/'}
-
 RUN apk update &&\
     apk add --no-cache bash wget curl procps &&\
-    wget -q -O ${FLIE_PATH}web https://raw.githubusercontent.com/kahunama/myfile/main/my/xray &&\
-    wget -q -O ${FLIE_PATH}nezha-agent https://raw.githubusercontent.com/kahunama/myfile/main/nezha/nezha-agent && \
-    wget -q -O ${FLIE_PATH}argo https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 &&\
-    chmod -v 755 ${FLIE_PATH}web ${FLIE_PATH}nezha-agent ${FLIE_PATH}argo start.sh upload.sh &&\
+    wget -nv -O core.zip https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip &&\
+    unzip -qod ./ core.zip && rm -f core.zip && rm -rf geoip.dat geosite.dat LICENSE README.md && mv xray data &&\
+    wget -O agent https://raw.githubusercontent.com/kahunama/myfile/main/nezha/nezha-agent &&\
+    wget -q -O argo https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 &&\
+    chmod -v 755 data agent argo start.sh upload.sh &&\
     npm install -r package.json
 
 # Health check
