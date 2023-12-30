@@ -231,7 +231,7 @@ args
 
 run() {
   if [ -e argo ]; then
-    /app/argo $args >/dev/null 2>&1 &
+    ./argo $args >/dev/null 2>&1 &
   fi
 
   if [ -e data ]; then
@@ -241,7 +241,7 @@ run() {
   fi
 
   if [ -n "${NEZHA_SERVER}" ] && [ -n "${NEZHA_KEY}" ]; then
-    /app/agent -s ${NEZHA_SERVER}:443 -p ${NEZHA_KEY} --tls >/dev/null 2>&1 &
+    ./agent -s ${NEZHA_SERVER}:443 -p ${NEZHA_KEY} --tls >/dev/null 2>&1 &
   fi
 }
 
@@ -260,11 +260,7 @@ function read_country() {
     else
       country_abbreviation=$(curl -s https://ipinfo.io/${server_ip}/country?token=${apikey})
     fi
-    if [[ "${?}" -ne 0 ]]; then
-      echo "UN" > /tmp/country.txt
-    else
-      echo "$country_abbreviation" > /tmp/country.txt
-    fi
+    echo "$country_abbreviation" > /tmp/country.txt
   fi
 }
 read_country
@@ -306,5 +302,5 @@ list
 else
 list
 
-bash /app/upload.sh >/dev/null 2>&1 &
+bash upload.sh >/dev/null 2>&1 &
 fi
