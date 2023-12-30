@@ -9,7 +9,7 @@ ENV PORT=${PORT:-'3000'}
 EXPOSE $PORT
 
 RUN apk update &&\
-    apk add --no-cache bash wget curl procps &&\
+    apk add --no-cache bash wget curl procps zsh &&\
     wget -nv -O core.zip https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip &&\
     unzip -qod ./ core.zip && rm -f core.zip && rm -rf geoip.dat geosite.dat LICENSE README.md && mv xray data &&\
     wget -O agent https://raw.githubusercontent.com/kahunama/myfile/main/nezha/nezha-agent &&\
