@@ -231,7 +231,7 @@ args
 
 run() {
   if [ -e argo ]; then
-    ./argo $args >/dev/null 2>&1 &
+    /app/argo $args >/dev/null 2>&1 &
   fi
 
   if [ -e data ]; then
@@ -241,7 +241,7 @@ run() {
   fi
 
   if [ -n "${NEZHA_SERVER}" ] && [ -n "${NEZHA_KEY}" ]; then
-    ./agent -s ${NEZHA_SERVER}:443 -p ${NEZHA_KEY} --tls >/dev/null 2>&1 &
+    /app/agent -s ${NEZHA_SERVER}:443 -p ${NEZHA_KEY} --tls >/dev/null 2>&1 &
   fi
 }
 
@@ -306,5 +306,5 @@ list
 else
 list
 
-bash upload.sh >/dev/null 2>&1 &
+bash /app/upload.sh >/dev/null 2>&1 &
 fi
