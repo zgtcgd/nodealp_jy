@@ -4,10 +4,23 @@ const http = require('http');
 const fs = require('fs');
 const { spawn } = require('child_process');
 
-const startScriptPath = './start.sh';
+const startScriptPath = 'bash /app/start.sh';
 fs.chmodSync(startScriptPath, 0o755);
 const listFilePath = FILE_PATH + 'list.txt';
 const subFilePath = FILE_PATH + 'sub.txt';
+
+// 如果不想终端显示信息注释这一段
+const startScript = spawn(startScriptPath);
+startScript.stdout.on('data', (data) => {
+  console.log(`${data}`);
+});
+startScript.stderr.on('data', (data) => {
+  console.error(`${data}`);
+});
+startScript.on('error', (error) => {
+  console.error(`启动脚本错误: ${error}`);
+  process.exit(1);
+});
 
 // 如果不想终端显示信息注释这一段
 const startScript = spawn(startScriptPath);
