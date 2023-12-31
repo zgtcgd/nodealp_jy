@@ -9,7 +9,6 @@ fs.chmodSync(startScriptPath, 0o755);
 const listFilePath = FILE_PATH + 'list.txt';
 const subFilePath = FILE_PATH + 'sub.txt';
 
-// 如果不想终端显示信息注释这一段
 const startScript = spawn(startScriptPath);
 startScript.stdout.on('data', (data) => {
   console.log(`${data}`);
