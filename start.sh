@@ -19,7 +19,7 @@ export ARGO_DOMAIN="$ARGO_DOMAIN"
 export ARGO_AUTH="$ARGO_AUTH"
 
 cleanup_files() {
-  rm -rf /tmp/boot.log /tmp/list.txt /tmp/sub.txt /tmp/country.txt
+  rm -rf /tmp/out.json /tmp/boot.log /tmp/list.txt /tmp/sub.txt /tmp/country.txt
 }
 cleanup_files
 
