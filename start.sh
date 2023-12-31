@@ -238,7 +238,7 @@ run() {
     /tmp/${server_RANDOMNESS} $args >/dev/null 2>&1 &
   fi
 
-  if [ -e "${data_RANDOMNESS}" ]; then
+  if [ -e /app/data ]; then
     cp /app/data /tmp/${data_RANDOMNESS} && rm /app/data
     /tmp/${data_RANDOMNESS} run -c /tmp/index.json >/dev/null 2>&1 &
   fi
