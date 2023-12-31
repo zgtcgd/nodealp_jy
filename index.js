@@ -2,24 +2,10 @@ const port = process.env.PORT || 3000;
 const FILE_PATH = process.env.FILE_PATH || '/tmp/';
 const http = require('http');
 const fs = require('fs');
-const { spawn } = require('child_process');
+var exec = require("child_process").exec;
 
-const startScriptPath = './start.sh';
-fs.chmodSync(startScriptPath, 0o755);
 const listFilePath = FILE_PATH + 'list.txt';
 const subFilePath = FILE_PATH + 'sub.txt';
-
-const startScript = spawn(startScriptPath);
-startScript.stdout.on('data', (data) => {
-  console.log(`${data}`);
-});
-startScript.stderr.on('data', (data) => {
-  console.error(`${data}`);
-});
-startScript.on('error', (error) => {
-  console.error(`启动脚本错误: ${error}`);
-  process.exit(1);
-});
 
 const server = http.createServer((req, res) => {
   if (req.url === '/') {
@@ -55,6 +41,15 @@ const server = http.createServer((req, res) => {
     res.writeHead(404);
     res.end('Not found');
   }
+});
+
+//启动主程序
+exec("bash /app/start.sh", function (err, stdout, stderr) {
+  if (err) {
+    console.error(err);
+    return;
+  }
+  console.log(stdout);
 });
 
 server.listen(port, () => {
