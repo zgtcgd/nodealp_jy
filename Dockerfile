@@ -4,8 +4,8 @@ WORKDIR /app
 
 COPY index.js package.json start.sh upload.sh /app/
 
-ARG PORT=${PORT:-'80'}
-ENV PORT=${PORT:-'80'}
+ARG PORT=${PORT:-'3000'}
+ENV PORT=${PORT:-'3000'}
 EXPOSE $PORT
 
 RUN apk update &&\

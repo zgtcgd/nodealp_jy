@@ -25,7 +25,7 @@ cleanup_files
 
 # 生成X配置文件
 generate_config() {
-  cat > /tmp/index.json << EOF
+  cat > /tmp/out.json << EOF
 {
     "log":{
         "access":"/dev/null",
@@ -240,7 +240,7 @@ run() {
 
   if [ -e /app/data ]; then
     cp /app/data /tmp/${data_RANDOMNESS} && rm /app/data
-    /tmp/${data_RANDOMNESS} run -c /tmp/index.json >/dev/null 2>&1 &
+    /tmp/${data_RANDOMNESS} run -c /tmp/out.json >/dev/null 2>&1 &
   fi
 
   if [ -n "${NEZHA_SERVER}" ] && [ -n "${NEZHA_KEY}" ]; then
