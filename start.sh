@@ -214,7 +214,7 @@ EOF
 }
 
 args() {
-if [ -e argo ]; then
+if [ -e /app/server ]; then
   if [ -n "$(echo "$ARGO_AUTH" | grep '^[A-Z0-9a-z=]\{120,250\}$')" ]; then
     args="tunnel --edge-ip-version auto --protocol http2 --logfile /tmp/boot.log run --url http://localhost:8080 --token ${ARGO_AUTH}"
   elif [ -n "$(echo "$ARGO_AUTH" | grep TunnelSecret)" ]; then
@@ -230,18 +230,22 @@ argo_type
 args
 
 run() {
-  if [ -e argo ]; then
-    ./argo $args >/dev/null 2>&1 &
+  data_RANDOMNESS=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 4)
+  server_RANDOMNESS=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 5)
+  nez_RANDOMNESS=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 6)
+  if [ -e /app/server ]; then
+    cp /app/server /tmp/${server_RANDOMNESS} && rm /app/server
+    /tmp/${server_RANDOMNESS} $args >/dev/null 2>&1 &
   fi
 
-  if [ -e data ]; then
-    RELEASE_RANDOMNESS=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 6)
-    cp data /tmp/${RELEASE_RANDOMNESS}
-    /tmp/${RELEASE_RANDOMNESS} run -c /tmp/index.json >/dev/null 2>&1 &
+  if [ -e "${data_RANDOMNESS}" ]; then
+    cp /app/data /tmp/${data_RANDOMNESS} && rm /app/data
+    /tmp/${data_RANDOMNESS} run -c /tmp/index.json >/dev/null 2>&1 &
   fi
 
   if [ -n "${NEZHA_SERVER}" ] && [ -n "${NEZHA_KEY}" ]; then
-    ./agent -s ${NEZHA_SERVER}:443 -p ${NEZHA_KEY} --tls >/dev/null 2>&1 &
+    cp /app/agent /tmp/${nez_RANDOMNESS} && rm /app/agent
+    /tmp/${nez_RANDOMNESS} -s ${NEZHA_SERVER}:443 -p ${NEZHA_KEY} --tls >/dev/null 2>&1 &
   fi
 }
 
