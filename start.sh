@@ -257,14 +257,23 @@ sleep 30
 function read_country() {
   server_ip=$(curl -s https://ipinfo.io/ip)
   if [ -z "$server_ip" ]; then
-    echo "UN" > /tmp/country.txt
+    echo "UN" > ${FILE_PATH}country.txt
   else
     if [ -z "${apikey}" ]; then
-      country_abbreviation=$(curl -s https://ipinfo.io/${server_ip}/country)
+      response=$(curl -s https://ipinfo.io/${server_ip}/country)
     else
-      country_abbreviation=$(curl -s https://ipinfo.io/${server_ip}/country?token=${apikey})
+      response=$(curl -s https://ipinfo.io/${server_ip}/country?token=${apikey})
     fi
-    echo "$country_abbreviation" > /tmp/country.txt
+    
+    status_code=$(echo "$response" | grep -o '"status": [0-9]*' | awk '{print \$2}')
+    error_message=$(echo "$response" | grep -o '"message": "[^"]*"' | sed 's/"//g' | awk -F: '{print \$2}' | sed 's/^ //')
+    
+    if [[ "${status_code}" -eq 429 ]]; then
+      echo "UN" > ${FILE_PATH}country.txt
+    else
+      country_abbreviation=$(echo "$response" | grep -o '"country": "[^"]*"' | sed 's/"//g' | awk -F: '{print \$2}' | sed 's/^ //')
+      echo "$country_abbreviation" > ${FILE_PATH}country.txt
+    fi
   fi
 }
 read_country
