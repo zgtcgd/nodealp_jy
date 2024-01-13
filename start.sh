@@ -258,7 +258,7 @@ function read_country() {
   server_ip=$(curl -s https://ipinfo.io/ip)
 
   if [ -z "$server_ip" ]; then
-    echo "UN" > "/tmp/country.txt"
+    echo "UN" > /tmp/country.txt
     return
   fi
 
@@ -271,10 +271,10 @@ function read_country() {
   status_code=$(echo "$response" | grep -o '"title": "Rate limit exceeded"')
 
   if [ -n "${status_code}" ]; then
-    echo "UN" > "/tmp/country.txt"
+    echo "UN" > /tmp/country.txt
   else
     country_abbreviation=$(echo "$response")
-    echo "$country_abbreviation" > "/tmp/country.txt"
+    echo "$country_abbreviation" > /tmp/country.txt
   fi
 }
 
