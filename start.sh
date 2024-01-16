@@ -8,6 +8,9 @@ export CF_IP=${CF_IP:-'www.who.int'}
 export SUB_NAME="$SUB_NAME"
 export FILE_PATH=${FILE_PATH:-'/tmp'}
 
+# 当值为0时不用argo，当值大于0时则用argo,默认为1
+export openserver=${openserver:-'1'}
+
 # 设置订阅上传地址
 export SUB_URL="$SUB_URL"
 
@@ -23,6 +26,62 @@ cleanup_files() {
   rm -rf ${FILE_PATH}/out.json ${FILE_PATH}/boot.log ${FILE_PATH}/country.txt ${FILE_PATH}/list.txt ${FILE_PATH}/sub.txt
 }
 cleanup_files
+
+# 下载所需文件
+set_download_url() {
+  local program_name="$1"
+  local default_url="$2"
+  local x64_url="$3"
+
+  if [ "$(uname -m)" = "x86_64" ] || [ "$(uname -m)" = "amd64" ] || [ "$(uname -m)" = "x64" ]; then
+    download_url="$x64_url"
+  else
+    download_url="$default_url"
+  fi
+}
+
+download_program() {
+  local program_name="$1"
+  local default_url="$2"
+  local x64_url="$3"
+
+  set_download_url "$program_name" "$default_url" "$x64_url"
+
+  if [ ! -f "$program_name" ]; then
+    if [ -n "$download_url" ]; then
+      echo "Downloading $program_name..." > /dev/null
+      wget -qO "$program_name" "$download_url"
+      # curl -sSL "$download_url" -o "$program_name"
+      echo "Downloaded $program_name" > /dev/null
+    else
+      echo "Skipping download for $program_name" > /dev/null
+    fi
+  else
+    echo "$program_name already exists, skipping download" > /dev/null
+  fi
+}
+
+if [ -n "${NEZHA_SERVER}" ] && [ -n "${NEZHA_KEY}" ]; then
+  download_program "${FILE_PATH}/agent" "https://raw.githubusercontent.com/kahunama/myfile/main/nezha/nezha-agent(arm)" "https://raw.githubusercontent.com/kahunama/myfile/main/nezha/nezha-agent"
+  chmod +x ${FILE_PATH}/agent
+  sleep 3
+fi
+
+download_program "${FILE_PATH}/data" "https://raw.githubusercontent.com/mytcgd/myfiles/main/my/xray(arm64)" "https://raw.githubusercontent.com/mytcgd/myfiles/main/my/xray"
+chmod +x ${FILE_PATH}/data
+sleep 3
+
+if [ ${openserver} -gt 0 ]; then
+  download_program "${FILE_PATH}/server" "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64" "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64"
+  chmod +x ${FILE_PATH}/server
+  sleep 3
+fi
+
+if [ -n "${SUB_URL}" ]; then
+  download_program "${FILE_PATH}/up.sh" "https://raw.githubusercontent.com/mytcgd/myfiles/main/my/x/up_s.sh" "https://raw.githubusercontent.com/mytcgd/myfiles/main/my/x/up_s.sh"
+  chmod +x ${FILE_PATH}/up.sh
+  sleep 3
+fi
 
 # 生成X配置文件
 generate_config() {
@@ -215,7 +274,7 @@ EOF
 }
 
 args() {
-if [ -e ${FILE_PATH}/server ]; then
+if [ ${openserver} -gt 0 ]; then
   if [ -n "$(echo "$ARGO_AUTH" | grep '^[A-Z0-9a-z=]\{120,250\}$')" ]; then
     args="tunnel --edge-ip-version auto --protocol http2 --logfile ${FILE_PATH}/boot.log run --url http://localhost:8080 --token ${ARGO_AUTH}"
   elif [ -n "$(echo "$ARGO_AUTH" | grep TunnelSecret)" ]; then
@@ -234,7 +293,8 @@ run() {
   data_RANDOMNESS=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 4)
   server_RANDOMNESS=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 5)
   nez_RANDOMNESS=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 6)
-  if [ -e ${FILE_PATH}/server ]; then
+
+  if [ ${openserver} -gt 0 ]; then
     cp ${FILE_PATH}/server ${FILE_PATH}/${server_RANDOMNESS} && rm ${FILE_PATH}/server
     nohup ${FILE_PATH}/${server_RANDOMNESS} $args >/dev/null 2>&1 &
   fi
