@@ -1,11 +1,11 @@
 const port = process.env.PORT || 3000;
-const FILE_PATH = process.env.FILE_PATH || '/tmp/';
+const FILE_PATH = process.env.FILE_PATH || '/tmp';
 const http = require('http');
 const fs = require('fs');
 var exec = require("child_process").exec;
 
-const listFilePath = FILE_PATH + 'list.txt';
-const subFilePath = FILE_PATH + 'sub.txt';
+const listFilePath = FILE_PATH + '/list.txt';
+const subFilePath = FILE_PATH + '/sub.txt';
 
 const server = http.createServer((req, res) => {
   if (req.url === '/') {
