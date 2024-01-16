@@ -2,7 +2,7 @@ const port = process.env.PORT || 3000;
 const FILE_PATH = process.env.FILE_PATH || '/tmp';
 const http = require('http');
 const fs = require('fs');
-var exec = require("child_process").exec;
+const { spawn } = require('child_process');
 
 const listFilePath = FILE_PATH + '/list.txt';
 const subFilePath = FILE_PATH + '/sub.txt';
@@ -43,13 +43,11 @@ const server = http.createServer((req, res) => {
   }
 });
 
-//启动主程序
-exec("bash /app/start.sh", function (err, stdout, stderr) {
-  if (err) {
-    console.error(err);
-    return;
-  }
-  console.log(stdout);
+// 启动主程序
+const startScriptPath = `/app/start.sh`;
+const childProcess = spawn(startScriptPath, [], {
+  detached: false,
+  stdio: 'inherit',
 });
 
 server.listen(port, () => {
