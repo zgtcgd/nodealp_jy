@@ -19,7 +19,6 @@ RUN apk update &&\
     npm install -r package.json
 
 # Health check
-HEALTHCHECK --interval=2m --timeout=30s \
-  CMD wget --no-verbose --tries=1 --spider http://localhost/healthcheck || exit 1
+HEALTHCHECK --interval=2m --timeout=30s CMD wget --no-verbose --tries=1 --spider http://localhost/healthcheck || exit 1
 
 ENTRYPOINT [ "node", "/app/index.js" ]
