@@ -2,7 +2,7 @@ FROM node:alpine
 
 WORKDIR /app
 
-COPY index.js package.json start.sh upload.sh /app/
+COPY index.js package.json start.sh up.sh /app/
 
 ARG PORT=${PORT:-'3000'}
 ENV PORT=${PORT:-'3000'}
