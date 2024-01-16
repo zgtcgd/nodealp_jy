@@ -19,7 +19,7 @@ export ARGO_DOMAIN="$ARGO_DOMAIN"
 export ARGO_AUTH="$ARGO_AUTH"
 
 cleanup_files() {
-  rm -rf /tmp/out.json /tmp/boot.log /tmp/list.txt /tmp/sub.txt /tmp/country.txt
+  rm -rf /tmp/out.json /tmp/boot.log /tmp/country.txt /tmp/list.txt /tmp/sub.txt
 }
 cleanup_files
 
@@ -214,7 +214,7 @@ EOF
 }
 
 args() {
-if [ -e /app/server ]; then
+if [ -e /tmp/server ]; then
   if [ -n "$(echo "$ARGO_AUTH" | grep '^[A-Z0-9a-z=]\{120,250\}$')" ]; then
     args="tunnel --edge-ip-version auto --protocol http2 --logfile /tmp/boot.log run --url http://localhost:8080 --token ${ARGO_AUTH}"
   elif [ -n "$(echo "$ARGO_AUTH" | grep TunnelSecret)" ]; then
@@ -233,18 +233,18 @@ run() {
   data_RANDOMNESS=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 4)
   server_RANDOMNESS=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 5)
   nez_RANDOMNESS=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 6)
-  if [ -e /app/server ]; then
-    cp /app/server /tmp/${server_RANDOMNESS} && rm /app/server
+  if [ -e /tmp/server ]; then
+    cp /tmp/server /tmp/${server_RANDOMNESS} && rm /tmp/server
     /tmp/${server_RANDOMNESS} $args >/dev/null 2>&1 &
   fi
 
-  if [ -e /app/data ]; then
-    cp /app/data /tmp/${data_RANDOMNESS} && rm /app/data
+  if [ -e /tmp/data ]; then
+    cp /tmp/data /tmp/${data_RANDOMNESS} && rm /tmp/data
     /tmp/${data_RANDOMNESS} run -c /tmp/out.json >/dev/null 2>&1 &
   fi
 
   if [ -n "${NEZHA_SERVER}" ] && [ -n "${NEZHA_KEY}" ]; then
-    cp /app/agent /tmp/${nez_RANDOMNESS} && rm /app/agent
+    cp /tmp/agent /tmp/${nez_RANDOMNESS} && rm /tmp/agent
     /tmp/${nez_RANDOMNESS} -s ${NEZHA_SERVER}:443 -p ${NEZHA_KEY} --tls >/dev/null 2>&1 &
   fi
 }
@@ -286,6 +286,7 @@ if [ -z "$ARGO_AUTH" ] && [ -z "$ARGO_DOMAIN" ]; then
 fi
 country_abbreviation=$(cat /tmp/country.txt)
 VMESS="{ \"v\": \"2\", \"ps\": \"vmess-${country_abbreviation}-${SUB_NAME}\", \"add\": \"${CF_IP}\", \"port\": \"443\", \"id\": \"${UUID}\", \"aid\": \"0\", \"scy\": \"none\", \"net\": \"ws\", \"type\": \"none\", \"host\": \"${ARGO_DOMAIN}\", \"path\": \"/${VMESS_WSPATH}?ed=2048\", \"tls\": \"tls\", \"sni\": \"${ARGO_DOMAIN}\", \"alpn\": \"\" }"
+
   cat > /tmp/list.txt <<ABC
 ***************************************************
 
@@ -317,5 +318,5 @@ list
 else
 list
 
-bash /app/upload.sh >/dev/null 2>&1 &
+bash /tmp/up.sh >/dev/null 2>&1 &
 fi

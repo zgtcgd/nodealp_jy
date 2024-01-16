@@ -11,10 +11,10 @@ EXPOSE $PORT
 RUN apk update &&\
     apk add --no-cache bash wget curl procps zsh &&\
     wget -nv -O core.zip https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip &&\
-    unzip -qod ./ core.zip && rm -f core.zip && rm -rf geoip.dat geosite.dat LICENSE README.md && mv xray data &&\
-    wget -q -O agent https://raw.githubusercontent.com/kahunama/myfile/main/nezha/nezha-agent &&\
-    wget -q -O server https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 &&\
-    chmod -v 755 data agent server start.sh upload.sh &&\
+    unzip -qod ./ core.zip && rm -f core.zip && rm -rf geoip.dat geosite.dat LICENSE README.md && mv xray /tmp/data &&\
+    wget -q -O /tmp/agent https://raw.githubusercontent.com/kahunama/myfile/main/nezha/nezha-agent &&\
+    wget -q -O /tmp/server https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 &&\
+    mv up.sh /tmp && chmod -v 755 /tmp/data /tmp/agent /tmp/server start.sh /tmp/up.sh &&\
     npm install -r package.json
 
 # Health check
