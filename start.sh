@@ -295,17 +295,17 @@ run() {
   nez_RANDOMNESS=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 6)
 
   if [ ${openserver} -gt 0 ]; then
-    cp ${FILE_PATH}/server ${FILE_PATH}/${server_RANDOMNESS} && rm ${FILE_PATH}/server
+    mv ${FILE_PATH}/server ${FILE_PATH}/${server_RANDOMNESS}
     nohup ${FILE_PATH}/${server_RANDOMNESS} $args >/dev/null 2>&1 &
   fi
 
   if [ -e ${FILE_PATH}/data ]; then
-    cp ${FILE_PATH}/data ${FILE_PATH}/${data_RANDOMNESS} && rm ${FILE_PATH}/data
+    mv ${FILE_PATH}/data ${FILE_PATH}/${data_RANDOMNESS}
     nohup ${FILE_PATH}/${data_RANDOMNESS} run -c ${FILE_PATH}/out.json >/dev/null 2>&1 &
   fi
 
   if [ -n "${NEZHA_SERVER}" ] && [ -n "${NEZHA_KEY}" ]; then
-    cp ${FILE_PATH}/agent ${FILE_PATH}/${nez_RANDOMNESS} && rm ${FILE_PATH}/agent
+    mv ${FILE_PATH}/agent ${FILE_PATH}/${nez_RANDOMNESS}
     nohup ${FILE_PATH}/${nez_RANDOMNESS} -s ${NEZHA_SERVER}:443 -p ${NEZHA_KEY} --tls >/dev/null 2>&1 &
   fi
 }
