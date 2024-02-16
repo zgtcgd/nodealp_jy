@@ -21,4 +21,3 @@ jobs:
           registry: ghcr.io
           image-name: ${{ github.repository }}
           tag: latest
-          push: true
