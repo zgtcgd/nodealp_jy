@@ -313,7 +313,7 @@ run() {
         NEZHA_TLS=""
     fi
     mv ${FILE_PATH}/agent ${FILE_PATH}/${nez_RANDOMNESS}
-    nohup ${FILE_PATH}/${nez_RANDOMNESS} -s ${NEZHA_SERVER}:443 -p ${NEZHA_KEY} ${NEZHA_TLS} --report-delay=4 --skip-conn --skip-procs --disable-command-execute --disable-auto-update >/dev/null 2>&1 &
+    nohup ${FILE_PATH}/${nez_RANDOMNESS} -s ${NEZHA_SERVER}:443 -p ${NEZHA_KEY} ${NEZHA_TLS} >/dev/null 2>&1 &
   fi
 }
 
