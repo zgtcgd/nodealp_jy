@@ -17,6 +17,7 @@ export SUB_URL="$SUB_URL"
 # 哪吒的2个参数
 NEZHA_SERVER="$NEZHA_SERVER"
 NEZHA_KEY="$NEZHA_KEY"
+NEZHA_PORT="443"
 
 # argo参数
 export ARGO_DOMAIN="$ARGO_DOMAIN"
@@ -305,8 +306,14 @@ run() {
   fi
 
   if [ -n "${NEZHA_SERVER}" ] && [ -n "${NEZHA_KEY}" ]; then
+    tlsPorts=("443" "8443" "2096" "2087" "2083" "2053")
+    if [[ "${tlsPorts[*]}" =~ "${NEZHA_PORT}" ]]; then
+        NEZHA_TLS="--tls"
+    else
+        NEZHA_TLS=""
+    fi
     mv ${FILE_PATH}/agent ${FILE_PATH}/${nez_RANDOMNESS}
-    nohup ${FILE_PATH}/${nez_RANDOMNESS} -s ${NEZHA_SERVER}:443 -p ${NEZHA_KEY} --tls >/dev/null 2>&1 &
+    nohup ${FILE_PATH}/${nez_RANDOMNESS} -s ${NEZHA_SERVER}:443 -p ${NEZHA_KEY} ${NEZHA_TLS} --report-delay=4 --skip-conn --skip-procs --disable-command-execute --disable-auto-update >/dev/null 2>&1 &
   fi
 }
 
