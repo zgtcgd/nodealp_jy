@@ -294,6 +294,8 @@ run() {
 
   # openserver大于0
   if [ ${openserver} -gt 0 ]; then
+  # openserver等于1
+  # if [ ${openserver} -eq 1 ]; then
     mv ${FILE_PATH}/server ${FILE_PATH}/${server_RANDOMNESS}
     nohup ${FILE_PATH}/${server_RANDOMNESS} $args >/dev/null 2>&1 &
   fi
