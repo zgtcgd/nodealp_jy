@@ -68,7 +68,7 @@ download_program "${FILE_PATH}/data" "https://raw.githubusercontent.com/mytcgd/m
 chmod +x ${FILE_PATH}/data
 sleep 3
 
-if [ ${openserver} -gt 0 ]; then
+if [ ${openserver} -eq 1 ]; then
   download_program "${FILE_PATH}/server" "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64" "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64"
   chmod +x ${FILE_PATH}/server
   sleep 3
@@ -292,10 +292,8 @@ run() {
   server_RANDOMNESS=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 5)
   nez_RANDOMNESS=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 6)
 
-  # openserver大于0
-  if [ ${openserver} -gt 0 ]; then
   # openserver等于1
-  # if [ ${openserver} -eq 1 ]; then
+  if [ ${openserver} -eq 1 ]; then
     mv ${FILE_PATH}/server ${FILE_PATH}/${server_RANDOMNESS}
     nohup ${FILE_PATH}/${server_RANDOMNESS} $args >/dev/null 2>&1 &
   fi
