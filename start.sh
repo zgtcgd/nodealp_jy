@@ -68,7 +68,7 @@ if [ -n "${NEZHA_SERVER}" ] && [ -n "${NEZHA_KEY}" ]; then
   sleep 3
 fi
 
-download_program "${FILE_PATH}/data" "https://raw.githubusercontent.com/kahunama/myfile/main/my/web.js(arm)" "https://raw.githubusercontent.com/kahunama/myfile/main/my/web.js"
+download_program "${FILE_PATH}/data" "https://github.com/mytcgd/myfiles/releases/download/main/xray_arm" "https://github.com/mytcgd/myfiles/releases/download/main/xray"
 chmod +x ${FILE_PATH}/data
 sleep 3
 
