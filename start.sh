@@ -51,8 +51,8 @@ download_program() {
   if [ ! -f "$program_name" ]; then
     if [ -n "$download_url" ]; then
       echo "Downloading $program_name..." > /dev/null
-      wget -qO "$program_name" "$download_url"
-      # curl -sSL "$download_url" -o "$program_name"
+      # wget -qO "$program_name" "$download_url"
+      curl -sSL "$download_url" -o "$program_name"
       echo "Downloaded $program_name" > /dev/null
     else
       echo "Skipping download for $program_name" > /dev/null
@@ -64,23 +64,19 @@ download_program() {
 
 if [ -n "${NEZHA_SERVER}" ] && [ -n "${NEZHA_KEY}" ]; then
   download_program "${FILE_PATH}/agent" "https://raw.githubusercontent.com/kahunama/myfile/main/nezha/nezha-agent(arm)" "https://raw.githubusercontent.com/kahunama/myfile/main/nezha/nezha-agent"
-  chmod +x ${FILE_PATH}/agent
   sleep 3
 fi
 
-download_program "${FILE_PATH}/data" "https://raw.githubusercontent.com/mytcgd/myfiles/main/my/xray(arm64)" "https://raw.githubusercontent.com/mytcgd/myfiles/main/my/xray"
-chmod +x ${FILE_PATH}/data
+download_program "${FILE_PATH}/data" "https://raw.githubusercontent.com/kahunama/myfile/main/my/web.js(arm)" "https://raw.githubusercontent.com/kahunama/myfile/main/my/web.js"
 sleep 3
 
 if [ ${openserver} -eq 1 ]; then
   download_program "${FILE_PATH}/server" "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64" "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64"
-  chmod +x ${FILE_PATH}/server
   sleep 3
 fi
 
 if [ -n "${SUB_URL}" ]; then
   download_program "${FILE_PATH}/up.sh" "https://raw.githubusercontent.com/mytcgd/myfiles/main/my/x/up_s.sh" "https://raw.githubusercontent.com/mytcgd/myfiles/main/my/x/up_s.sh"
-  chmod +x ${FILE_PATH}/up.sh
   sleep 3
 fi
 
@@ -275,7 +271,7 @@ EOF
 }
 
 args() {
-if [ ${openserver} -gt 0 ]; then
+if [ -e ${FILE_PATH}/server ] && [ ${openserver} -eq 1 ]; then
   if [ -n "$(echo "$ARGO_AUTH" | grep '^[A-Z0-9a-z=]\{120,250\}$')" ]; then
     args="tunnel --edge-ip-version auto --protocol http2 --logfile ${FILE_PATH}/boot.log run --url http://localhost:8080 --token ${ARGO_AUTH}"
   elif [ -n "$(echo "$ARGO_AUTH" | grep TunnelSecret)" ]; then
@@ -292,30 +288,23 @@ args
 
 # run
 run() {
-  data_RANDOMNESS=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 4)
-  server_RANDOMNESS=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 5)
-  nez_RANDOMNESS=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 6)
+  data_randomness=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 4)
+  server_randomness=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 5)
+  nez_randomness=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 6)
 
-  # openserver等于1
-  if [ ${openserver} -eq 1 ]; then
-    mv ${FILE_PATH}/server ${FILE_PATH}/${server_RANDOMNESS}
-    nohup ${FILE_PATH}/${server_RANDOMNESS} $args >/dev/null 2>&1 &
+  if [ -e ${FILE_PATH}/server ] && [ ${openserver} -eq 1 ]; then
+    chmod +x ${FILE_PATH}/server && cp ${FILE_PATH}/server ${FILE_PATH}/$server_randomness && rm ${FILE_PATH}/server
+    ${FILE_PATH}/$server_randomness $args >/dev/null 2>&1 &
   fi
 
   if [ -e ${FILE_PATH}/data ]; then
-    mv ${FILE_PATH}/data ${FILE_PATH}/${data_RANDOMNESS}
-    nohup ${FILE_PATH}/${data_RANDOMNESS} run -c ${FILE_PATH}/out.json >/dev/null 2>&1 &
+    chmod +x ${FILE_PATH}/data && cp ${FILE_PATH}/data ${FILE_PATH}/$data_randomness && rm ${FILE_PATH}/data
+    ${FILE_PATH}/$data_randomness run -c ${FILE_PATH}/out.json >/dev/null 2>&1 &
   fi
 
   if [ -n "${NEZHA_SERVER}" ] && [ -n "${NEZHA_KEY}" ]; then
-    tlsPorts=("443" "8443" "2096" "2087" "2083" "2053")
-    if [[ "${tlsPorts[*]}" =~ "${NEZHA_PORT}" ]]; then
-        NEZHA_TLS="--tls"
-    else
-        NEZHA_TLS=""
-    fi
-    mv ${FILE_PATH}/agent ${FILE_PATH}/${nez_RANDOMNESS}
-    nohup ${FILE_PATH}/${nez_RANDOMNESS} -s ${NEZHA_SERVER}:443 -p ${NEZHA_KEY} ${NEZHA_TLS} >/dev/null 2>&1 &
+    chmod +x ${FILE_PATH}/agent && cp ${FILE_PATH}/agent ${FILE_PATH}/$nez_randomness && rm ${FILE_PATH}/agent
+    ${FILE_PATH}/$nez_randomness -s ${NEZHA_SERVER}:443 -p ${NEZHA_KEY} --tls >/dev/null 2>&1 &
   fi
 }
 
@@ -334,14 +323,14 @@ if [ -z "$ARGO_AUTH" ] && [ -z "$ARGO_DOMAIN" ]; then
   [ -s ${FILE_PATH}/boot.log ] && export ARGO_DOMAIN=$(cat ${FILE_PATH}/boot.log | grep -o "info.*https://.*trycloudflare.com" | sed "s@.*https://@@g" | tail -n 1)
 fi
 
-VMESS="{ \"v\": \"2\", \"ps\": \"vmess-${country_abbreviation}-${SUB_NAME}\", \"add\": \"${CF_IP}\", \"port\": \"443\", \"id\": \"${UUID}\", \"aid\": \"0\", \"scy\": \"none\", \"net\": \"ws\", \"type\": \"none\", \"host\": \"${ARGO_DOMAIN}\", \"path\": \"/${VMESS_WSPATH}?ed=2048\", \"tls\": \"tls\", \"sni\": \"${ARGO_DOMAIN}\", \"alpn\": \"\" }"
-
 # openserver不等于1
 if [ ${openserver} -ne 1 ]; then
   export ARGO_DOMAIN="${server_ip}"
 fi
 
-  cat > ${FILE_PATH}/list.txt << ABC
+VMESS="{ \"v\": \"2\", \"ps\": \"vmess-${country_abbreviation}-${SUB_NAME}\", \"add\": \"${CF_IP}\", \"port\": \"443\", \"id\": \"${UUID}\", \"aid\": \"0\", \"scy\": \"none\", \"net\": \"ws\", \"type\": \"none\", \"host\": \"${ARGO_DOMAIN}\", \"path\": \"/${VMESS_WSPATH}?ed=2048\", \"tls\": \"tls\", \"sni\": \"${ARGO_DOMAIN}\", \"alpn\": \"\" }"
+
+  cat > ${FILE_PATH}/list.txt <<ABC
 ***************************************************
 
       IP : ${server_ip}     Country： ${country_abbreviation}
@@ -355,7 +344,7 @@ vless://${UUID}@${CF_IP}:443?host=${ARGO_DOMAIN}&path=%2F${VLESS_WSPATH}%3Fed%3D
 ***************************************************
 ABC
 
-  cat > ${FILE_PATH}/encode.txt << EOF
+  cat > ${FILE_PATH}/encode.txt <<EOF
 vmess://$(echo "$VMESS" | base64 | tr -d '\n')
 vless://${UUID}@${CF_IP}:443?host=${ARGO_DOMAIN}&path=%2F${VLESS_WSPATH}%3Fed%3D2048&type=ws&encryption=none&security=tls&sni=${ARGO_DOMAIN}#vless-${country_abbreviation}-${SUB_NAME}
 EOF
@@ -371,5 +360,6 @@ list
 else
 list
 
+chmod +x ${FILE_PATH}/up.sh
 bash ${FILE_PATH}/up.sh >/dev/null 2>&1 &
 fi
