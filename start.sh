@@ -320,8 +320,8 @@ run
 sleep 30
 
 # ip and country
-# export server_ip=$(curl -s https://speed.cloudflare.com/meta | tr ',' '\n' | grep -Po '"clientIp"\s*:\s*"\K([^"]*)')
-export server_ip=$(curl -s https://ipv4.icanhazip.com)
+export server_ip=$(curl -s https://speed.cloudflare.com/meta | tr ',' '\n' | grep -Po '"clientIp"\s*:\s*"\K([^"]*)')
+# export server_ip=$(curl -s https://ipv4.icanhazip.com)
 export country_abbreviation=$(curl -s https://speed.cloudflare.com/meta | tr ',' '\n' | grep -Po '"country"\s*:\s*"\K([^"]*)')
 
 # list
