@@ -19,6 +19,10 @@ NEZHA_PORT=${NEZHA_PORT:-'443'}
 export ARGO_DOMAIN="$ARGO_DOMAIN"
 export ARGO_AUTH="$ARGO_AUTH"
 
+if [ ! -d "$FILE_PATH" ]; then
+  mkdir -p "$FILE_PATH"
+fi
+
 cleanup_files() {
   rm -rf ${FILE_PATH}/*
 }
