@@ -301,10 +301,8 @@ run() {
     ${FILE_PATH}/$server_randomness $args >/dev/null 2>&1 &
   fi
 
-  if [ -e ${FILE_PATH}/data ]; then
-    mv ${FILE_PATH}/data ${FILE_PATH}/${data_randomness}
-    ${FILE_PATH}/$data_randomness run -c ${FILE_PATH}/out.json >/dev/null 2>&1 &
-  fi
+  mv ${FILE_PATH}/data ${FILE_PATH}/${data_randomness}
+  ${FILE_PATH}/$data_randomness run -c ${FILE_PATH}/out.json >/dev/null 2>&1 &
 
   if [ -n "${NEZHA_SERVER}" ] && [ -n "${NEZHA_KEY}" ]; then
     tlsPorts=("443" "8443" "2096" "2087" "2083" "2053")
