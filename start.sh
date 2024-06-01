@@ -64,19 +64,23 @@ download_program() {
 
 if [ -n "${NEZHA_SERVER}" ] && [ -n "${NEZHA_KEY}" ]; then
   download_program "${FILE_PATH}/agent" "https://raw.githubusercontent.com/kahunama/myfile/main/nezha/nezha-agent(arm)" "https://raw.githubusercontent.com/kahunama/myfile/main/nezha/nezha-agent"
+  chmod +x ${FILE_PATH}/agent
   sleep 3
 fi
 
 download_program "${FILE_PATH}/data" "https://raw.githubusercontent.com/kahunama/myfile/main/my/web.js(arm)" "https://raw.githubusercontent.com/kahunama/myfile/main/my/web.js"
+chmod +x ${FILE_PATH}/data
 sleep 3
 
 if [ ${openserver} -eq 1 ]; then
   download_program "${FILE_PATH}/server" "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64" "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64"
+  chmod +x ${FILE_PATH}/server
   sleep 3
 fi
 
 if [ -n "${SUB_URL}" ]; then
   download_program "${FILE_PATH}/up.sh" "https://raw.githubusercontent.com/mytcgd/myfiles/main/my/x/up_s.sh" "https://raw.githubusercontent.com/mytcgd/myfiles/main/my/x/up_s.sh"
+  chmod +x ${FILE_PATH}/up.sh
   sleep 3
 fi
 
@@ -293,12 +297,12 @@ run() {
   nez_randomness=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 6)
 
   if [ -e ${FILE_PATH}/server ] && [ ${openserver} -eq 1 ]; then
-    chmod +x ${FILE_PATH}/server && cp ${FILE_PATH}/server ${FILE_PATH}/$server_randomness && rm ${FILE_PATH}/server
+    mv ${FILE_PATH}/server ${FILE_PATH}/${server_randomness}
     ${FILE_PATH}/$server_randomness $args >/dev/null 2>&1 &
   fi
 
   if [ -e ${FILE_PATH}/data ]; then
-    chmod +x ${FILE_PATH}/data && cp ${FILE_PATH}/data ${FILE_PATH}/$data_randomness && rm ${FILE_PATH}/data
+    mv ${FILE_PATH}/data ${FILE_PATH}/${data_randomness}
     ${FILE_PATH}/$data_randomness run -c ${FILE_PATH}/out.json >/dev/null 2>&1 &
   fi
 
@@ -309,7 +313,7 @@ run() {
     else
       NEZHA_TLS=""
     fi
-    chmod +x ${FILE_PATH}/agent && cp ${FILE_PATH}/agent ${FILE_PATH}/$nez_randomness && rm ${FILE_PATH}/agent
+    mv ${FILE_PATH}/agent ${FILE_PATH}/${nez_randomness}
     ${FILE_PATH}/$nez_randomness -s ${NEZHA_SERVER}:${NEZHA_PORT} -p ${NEZHA_KEY} ${NEZHA_TLS} >/dev/null 2>&1 &
   fi
 }
@@ -364,6 +368,5 @@ if [ -z "$SUB_URL" ]; then
   list
 else
   list
-  chmod +x ${FILE_PATH}/up.sh
   bash ${FILE_PATH}/up.sh >/dev/null 2>&1 &
 fi
