@@ -293,7 +293,7 @@ args
 # run
 run() {
   server_randomness=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 4)
-  data_randomness=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 5)
+  data_randomnes=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 5)
   nez_randomness=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 6)
 
   if [ -e ${FILE_PATH}/server ] && [ ${openserver} -eq 1 ]; then
@@ -302,8 +302,8 @@ run() {
   fi
 
   if [ -e ${FILE_PATH}/data ]; then
-    mv ${FILE_PATH}/data ${FILE_PATH}/${data_randomness}
-    ${FILE_PATH}/$data_randomness run -c ${FILE_PATH}/out.json >/dev/null 2>&1 &
+    mv ${FILE_PATH}/data ${FILE_PATH}/${data_randomnes}
+    ${FILE_PATH}/$data_randomnes run -c ${FILE_PATH}/out.json >/dev/null 2>&1 &
   fi
 
   if [ -n "${NEZHA_SERVER}" ] && [ -n "${NEZHA_KEY}" ]; then
