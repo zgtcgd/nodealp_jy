@@ -288,8 +288,8 @@ args
 
 # run
 run() {
-  data_randomness=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 4)
-  server_randomness=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 5)
+  server_randomness=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 4)
+  data_randomness=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 5)
   nez_randomness=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 6)
 
   if [ -e ${FILE_PATH}/server ] && [ ${openserver} -eq 1 ]; then
@@ -303,8 +303,14 @@ run() {
   fi
 
   if [ -n "${NEZHA_SERVER}" ] && [ -n "${NEZHA_KEY}" ]; then
+    tlsPorts=("443" "8443" "2096" "2087" "2083" "2053")
+    if [[ " ${tlsPorts[@]} " =~ " ${NEZHA_PORT} " ]]; then
+      NEZHA_TLS="--tls"
+    else
+      NEZHA_TLS=""
+    fi
     chmod +x ${FILE_PATH}/agent && cp ${FILE_PATH}/agent ${FILE_PATH}/$nez_randomness && rm ${FILE_PATH}/agent
-    ${FILE_PATH}/$nez_randomness -s ${NEZHA_SERVER}:443 -p ${NEZHA_KEY} --tls >/dev/null 2>&1 &
+    ${FILE_PATH}/$nez_randomness -s ${NEZHA_SERVER}:${NEZHA_PORT} -p ${NEZHA_KEY} ${NEZHA_TLS} >/dev/null 2>&1 &
   fi
 }
 
@@ -319,14 +325,14 @@ export country_abbreviation=$(curl -s https://speed.cloudflare.com/meta | tr ','
 
 # list
 list() {
-if [ -z "$ARGO_AUTH" ] && [ -z "$ARGO_DOMAIN" ]; then
-  [ -s ${FILE_PATH}/boot.log ] && export ARGO_DOMAIN=$(cat ${FILE_PATH}/boot.log | grep -o "info.*https://.*trycloudflare.com" | sed "s@.*https://@@g" | tail -n 1)
-fi
+  if [ -z "$ARGO_AUTH" ] && [ -z "$ARGO_DOMAIN" ]; then
+    [ -s ${FILE_PATH}/boot.log ] && export ARGO_DOMAIN=$(cat ${FILE_PATH}/boot.log | grep -o "info.*https://.*trycloudflare.com" | sed "s@.*https://@@g" | tail -n 1)
+  fi
 
-# openserver不等于1
-if [ ${openserver} -ne 1 ]; then
-  export ARGO_DOMAIN="${server_ip}"
-fi
+  # openserver不等于1
+  if [ ${openserver} -ne 1 ]; then
+    export ARGO_DOMAIN="${server_ip}"
+  fi
 
 VMESS="{ \"v\": \"2\", \"ps\": \"vmess-${country_abbreviation}-${SUB_NAME}\", \"add\": \"${CF_IP}\", \"port\": \"443\", \"id\": \"${UUID}\", \"aid\": \"0\", \"scy\": \"none\", \"net\": \"ws\", \"type\": \"none\", \"host\": \"${ARGO_DOMAIN}\", \"path\": \"/${VMESS_WSPATH}?ed=2048\", \"tls\": \"tls\", \"sni\": \"${ARGO_DOMAIN}\", \"alpn\": \"\" }"
 
@@ -349,17 +355,15 @@ vmess://$(echo "$VMESS" | base64 | tr -d '\n')
 vless://${UUID}@${CF_IP}:443?host=${ARGO_DOMAIN}&path=%2F${VLESS_WSPATH}%3Fed%3D2048&type=ws&encryption=none&security=tls&sni=${ARGO_DOMAIN}#vless-${country_abbreviation}-${SUB_NAME}
 EOF
 
-base64 ${FILE_PATH}/encode.txt | tr -d '\n' > ${FILE_PATH}/sub.txt
-rm ${FILE_PATH}/encode.txt
+  base64 ${FILE_PATH}/encode.txt | tr -d '\n' > ${FILE_PATH}/sub.txt
+  rm ${FILE_PATH}/encode.txt
 }
 
 # up
 if [ -z "$SUB_URL" ]; then
-list
-
+  list
 else
-list
-
-chmod +x ${FILE_PATH}/up.sh
-bash ${FILE_PATH}/up.sh >/dev/null 2>&1 &
+  list
+  chmod +x ${FILE_PATH}/up.sh
+  bash ${FILE_PATH}/up.sh >/dev/null 2>&1 &
 fi
