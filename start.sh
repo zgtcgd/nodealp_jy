@@ -302,7 +302,7 @@ run() {
   fi
 
   if [ -e ${FILE_PATH}/data ]; then
-    mv ${FILE_PATH}/data ${FILE_PATH}/${data_randomnes}
+    mv ${FILE_PATH}/data ${FILE_PATH}/${data_randomness}
     ${FILE_PATH}/$data_randomnes run -c ${FILE_PATH}/out.json >/dev/null 2>&1 &
   fi
 
