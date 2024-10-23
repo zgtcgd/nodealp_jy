@@ -1,19 +1,20 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-# variable
-export V_PORT=${V_PORT:-'8080'} # 80 8080 8880 2052 2082 2086 2095
-export CFPORT=${CFPORT:-'443'} # 443 2053 2083 2087 2096 8443
+# Define Environment Variables
+export V_PORT=${V_PORT:-'8080'}
+export CFPORT=${CFPORT:-'443'} # https 443 2053 2083 2087 2096 8443  # http 80 8080 8880 2052 2082 2086 2095
 export UUID=${UUID:-'de04add9-5c68-8bab-950c-08cd5320df18'}
 export VMESS_WSPATH=${VMESS_WSPATH:-'startvm'}
 export VLESS_WSPATH=${VLESS_WSPATH:-'startvl'}
 export CF_IP=${CF_IP:-'ip.sb'}
 export MY_DOMAIN="$MY_DOMAIN"
-export SUB_NAME="$SUB_NAME"
 export FILE_PATH=${FILE_PATH:-'/tmp'}
 
 export openserver=${openserver:-'1'}
+export openkeepalive=${openkeepalive:-'0'}
 
 export SUB_URL="$SUB_URL"
+export SUB_NAME="$SUB_NAME"
 
 export NEZHA_SERVER="$NEZHA_SERVER"
 export NEZHA_KEY="$NEZHA_KEY"
@@ -22,4 +23,425 @@ export NEZHA_PORT=${NEZHA_PORT:-'443'}
 export ARGO_DOMAIN="$ARGO_DOMAIN"
 export ARGO_AUTH="$ARGO_AUTH"
 
-echo "aWYgWyAhIC1kICIkRklMRV9QQVRIIiBdOyB0aGVuCiAgbWtkaXIgLXAgIiRGSUxFX1BBVEgiCmZpCgpjbGVhbnVwX2ZpbGVzKCkgewogIHJtIC1yZiAke0ZJTEVfUEFUSH0vKgp9CmNsZWFudXBfZmlsZXMKCiMgRG93bmxvYWQgcmVxdWlyZWQgZmlsZXMKc2V0X2Rvd25sb2FkX3VybCgpIHsKICBsb2NhbCBwcm9ncmFtX25hbWU9IiQxIgogIGxvY2FsIGRlZmF1bHRfdXJsPSIkMiIKICBsb2NhbCB4NjRfdXJsPSIkMyIKCiAgaWYgWyAiJCh1bmFtZSAtbSkiID0gIng4Nl82NCIgXSB8fCBbICIkKHVuYW1lIC1tKSIgPSAiYW1kNjQiIF0gfHwgWyAiJCh1bmFtZSAtbSkiID0gIng2NCIgXTsgdGhlbgogICAgZG93bmxvYWRfdXJsPSIkeDY0X3VybCIKICBlbHNlCiAgICBkb3dubG9hZF91cmw9IiRkZWZhdWx0X3VybCIKICBmaQp9Cgpkb3dubG9hZF9wcm9ncmFtKCkgewogIGxvY2FsIHByb2dyYW1fbmFtZT0iJDEiCiAgbG9jYWwgZGVmYXVsdF91cmw9IiQyIgogIGxvY2FsIHg2NF91cmw9IiQzIgoKICBzZXRfZG93bmxvYWRfdXJsICIkcHJvZ3JhbV9uYW1lIiAiJGRlZmF1bHRfdXJsIiAiJHg2NF91cmwiCgogIGlmIFsgISAtZiAiJHByb2dyYW1fbmFtZSIgXTsgdGhlbgogICAgaWYgWyAtbiAiJGRvd25sb2FkX3VybCIgXTsgdGhlbgogICAgICBlY2hvICJEb3dubG9hZGluZyAkcHJvZ3JhbV9uYW1lLi4uIiA+IC9kZXYvbnVsbAogICAgICAjIHdnZXQgLXEgLU8gIiRwcm9ncmFtX25hbWUiICIkZG93bmxvYWRfdXJsIgogICAgICBjdXJsIC1zU0wgIiRkb3dubG9hZF91cmwiIC1vICIkcHJvZ3JhbV9uYW1lIgogICAgICBlY2hvICJEb3dubG9hZGVkICRwcm9ncmFtX25hbWUiID4gL2Rldi9udWxsCiAgICBlbHNlCiAgICAgIGVjaG8gIlNraXBwaW5nIGRvd25sb2FkIGZvciAkcHJvZ3JhbV9uYW1lIiA+IC9kZXYvbnVsbAogICAgZmkKICBlbHNlCiAgICBlY2hvICIkcHJvZ3JhbV9uYW1lIGFscmVhZHkgZXhpc3RzLCBza2lwcGluZyBkb3dubG9hZCIgPiAvZGV2L251bGwKICBmaQp9CgppZiBbIC1uICIke05FWkhBX1NFUlZFUn0iIF0gJiYgWyAtbiAiJHtORVpIQV9LRVl9IiBdOyB0aGVuCiAgZG93bmxvYWRfcHJvZ3JhbSAiJHtGSUxFX1BBVEh9L2FnZW50IiAiaHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL2thaHVuYW1hL215ZmlsZS9tYWluL25lemhhL25lemhhLWFnZW50KGFybSkiICJodHRwczovL3Jhdy5naXRodWJ1c2VyY29udGVudC5jb20va2FodW5hbWEvbXlmaWxlL21haW4vbmV6aGEvbmV6aGEtYWdlbnQiCiAgY2htb2QgK3ggJHtGSUxFX1BBVEh9L2FnZW50CiAgc2xlZXAgMwpmaQoKZG93bmxvYWRfcHJvZ3JhbSAiJHtGSUxFX1BBVEh9L2RhdGEiICJodHRwczovL2dpdGh1Yi5jb20vbXl0Y2dkL215ZmlsZXMvcmVsZWFzZXMvZG93bmxvYWQvbWFpbi94cmF5X2FybSIgImh0dHBzOi8vZ2l0aHViLmNvbS9teXRjZ2QvbXlmaWxlcy9yZWxlYXNlcy9kb3dubG9hZC9tYWluL3hyYXkiCmNobW9kICt4ICR7RklMRV9QQVRIfS9kYXRhCnNsZWVwIDMKCmlmIFsgJHtvcGVuc2VydmVyfSAtZXEgMSBdOyB0aGVuCiAgZG93bmxvYWRfcHJvZ3JhbSAiJHtGSUxFX1BBVEh9L3NlcnZlciIgImh0dHBzOi8vZ2l0aHViLmNvbS9jbG91ZGZsYXJlL2Nsb3VkZmxhcmVkL3JlbGVhc2VzL2xhdGVzdC9kb3dubG9hZC9jbG91ZGZsYXJlZC1saW51eC1hcm02NCIgImh0dHBzOi8vZ2l0aHViLmNvbS9jbG91ZGZsYXJlL2Nsb3VkZmxhcmVkL3JlbGVhc2VzL2xhdGVzdC9kb3dubG9hZC9jbG91ZGZsYXJlZC1saW51eC1hbWQ2NCIKICBjaG1vZCAreCAke0ZJTEVfUEFUSH0vc2VydmVyCiAgc2xlZXAgMwpmaQoKaWYgWyAtbiAiJHtTVUJfVVJMfSIgXTsgdGhlbgogIGRvd25sb2FkX3Byb2dyYW0gIiR7RklMRV9QQVRIfS91cC5zaCIgImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9teXRjZ2QvbXlmaWxlcy9tYWluL215L3gvdXBfcy5zaCIgImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9teXRjZ2QvbXlmaWxlcy9tYWluL215L3gvdXBfcy5zaCIKICBjaG1vZCAreCAke0ZJTEVfUEFUSH0vdXAuc2gKICBzbGVlcCAzCmZpCgojIEdlbmVyYXRlIGNvbmZpZ3VyYXRpb24gZmlsZQpnZW5lcmF0ZV9jb25maWcoKSB7CiAgY2F0ID4gJHtGSUxFX1BBVEh9L291dC5qc29uIDw8IEVPRgp7CiAgICAibG9nIjp7CiAgICAgICAgImFjY2VzcyI6Ii9kZXYvbnVsbCIsCiAgICAgICAgImVycm9yIjoiL2Rldi9udWxsIiwKICAgICAgICAibG9nbGV2ZWwiOiJub25lIgogICAgfSwKICAgICJpbmJvdW5kcyI6WwogICAgICAgIHsKICAgICAgICAgICAgInBvcnQiOiRWX1BPUlQsCiAgICAgICAgICAgICJwcm90b2NvbCI6InZsZXNzIiwKICAgICAgICAgICAgInNldHRpbmdzIjp7CiAgICAgICAgICAgICAgICAiY2xpZW50cyI6WwogICAgICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICAgICAgImlkIjoiJHtVVUlEfSIsCiAgICAgICAgICAgICAgICAgICAgICAgICJmbG93IjoieHRscy1ycHJ4LXZpc2lvbiIKICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICBdLAogICAgICAgICAgICAgICAgImRlY3J5cHRpb24iOiJub25lIiwKICAgICAgICAgICAgICAgICJmYWxsYmFja3MiOlsKICAgICAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgICAgICJkZXN0IjozMDAxCiAgICAgICAgICAgICAgICAgICAgfSwKICAgICAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgICAgICJwYXRoIjoiLyR7VkxFU1NfV1NQQVRIfSIsCiAgICAgICAgICAgICAgICAgICAgICAgICJkZXN0IjozMDAyCiAgICAgICAgICAgICAgICAgICAgfSwKICAgICAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgICAgICJwYXRoIjoiLyR7Vk1FU1NfV1NQQVRIfSIsCiAgICAgICAgICAgICAgICAgICAgICAgICJkZXN0IjozMDAzCiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgXQogICAgICAgICAgICB9LAogICAgICAgICAgICAic3RyZWFtU2V0dGluZ3MiOnsKICAgICAgICAgICAgICAgICJuZXR3b3JrIjoidGNwIgogICAgICAgICAgICB9CiAgICAgICAgfSwKICAgICAgICB7CiAgICAgICAgICAgICJwb3J0IjozMDAxLAogICAgICAgICAgICAibGlzdGVuIjoiMTI3LjAuMC4xIiwKICAgICAgICAgICAgInByb3RvY29sIjoidmxlc3MiLAogICAgICAgICAgICAic2V0dGluZ3MiOnsKICAgICAgICAgICAgICAgICJjbGllbnRzIjpbCiAgICAgICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgICAgICAiaWQiOiIke1VVSUR9IgogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIF0sCiAgICAgICAgICAgICAgICAiZGVjcnlwdGlvbiI6Im5vbmUiCiAgICAgICAgICAgIH0sCiAgICAgICAgICAgICJzdHJlYW1TZXR0aW5ncyI6ewogICAgICAgICAgICAgICAgIm5ldHdvcmsiOiJ3cyIsCiAgICAgICAgICAgICAgICAic2VjdXJpdHkiOiJub25lIgogICAgICAgICAgICB9CiAgICAgICAgfSwKICAgICAgICB7CiAgICAgICAgICAgICJwb3J0IjozMDAyLAogICAgICAgICAgICAibGlzdGVuIjoiMTI3LjAuMC4xIiwKICAgICAgICAgICAgInByb3RvY29sIjoidmxlc3MiLAogICAgICAgICAgICAic2V0dGluZ3MiOnsKICAgICAgICAgICAgICAgICJjbGllbnRzIjpbCiAgICAgICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgICAgICAiaWQiOiIke1VVSUR9IiwKICAgICAgICAgICAgICAgICAgICAgICAgImxldmVsIjowCiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgXSwKICAgICAgICAgICAgICAgICJkZWNyeXB0aW9uIjoibm9uZSIKICAgICAgICAgICAgfSwKICAgICAgICAgICAgInN0cmVhbVNldHRpbmdzIjp7CiAgICAgICAgICAgICAgICAibmV0d29yayI6IndzIiwKICAgICAgICAgICAgICAgICJzZWN1cml0eSI6Im5vbmUiLAogICAgICAgICAgICAgICAgIndzU2V0dGluZ3MiOnsKICAgICAgICAgICAgICAgICAgICAicGF0aCI6Ii8ke1ZMRVNTX1dTUEFUSH0iCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIH0sCiAgICAgICAgICAgICJzbmlmZmluZyI6ewogICAgICAgICAgICAgICAgImVuYWJsZWQiOnRydWUsCiAgICAgICAgICAgICAgICAiZGVzdE92ZXJyaWRlIjpbCiAgICAgICAgICAgICAgICAgICAgImh0dHAiLAogICAgICAgICAgICAgICAgICAgICJ0bHMiLAogICAgICAgICAgICAgICAgICAgICJxdWljIgogICAgICAgICAgICAgICAgXSwKICAgICAgICAgICAgICAgICJtZXRhZGF0YU9ubHkiOmZhbHNlCiAgICAgICAgICAgIH0KICAgICAgICB9LAogICAgICAgIHsKICAgICAgICAgICAgInBvcnQiOjMwMDMsCiAgICAgICAgICAgICJsaXN0ZW4iOiIxMjcuMC4wLjEiLAogICAgICAgICAgICAicHJvdG9jb2wiOiJ2bWVzcyIsCiAgICAgICAgICAgICJzZXR0aW5ncyI6ewogICAgICAgICAgICAgICAgImNsaWVudHMiOlsKICAgICAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgICAgICJpZCI6IiR7VVVJRH0iLAogICAgICAgICAgICAgICAgICAgICAgICAiYWx0ZXJJZCI6MAogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIF0KICAgICAgICAgICAgfSwKICAgICAgICAgICAgInN0cmVhbVNldHRpbmdzIjp7CiAgICAgICAgICAgICAgICAibmV0d29yayI6IndzIiwKICAgICAgICAgICAgICAgICJ3c1NldHRpbmdzIjp7CiAgICAgICAgICAgICAgICAgICAgInBhdGgiOiIvJHtWTUVTU19XU1BBVEh9IgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9LAogICAgICAgICAgICAic25pZmZpbmciOnsKICAgICAgICAgICAgICAgICJlbmFibGVkIjp0cnVlLAogICAgICAgICAgICAgICAgImRlc3RPdmVycmlkZSI6WwogICAgICAgICAgICAgICAgICAgICJodHRwIiwKICAgICAgICAgICAgICAgICAgICAidGxzIiwKICAgICAgICAgICAgICAgICAgICAicXVpYyIKICAgICAgICAgICAgICAgIF0sCiAgICAgICAgICAgICAgICAibWV0YWRhdGFPbmx5IjpmYWxzZQogICAgICAgICAgICB9CiAgICAgICAgfQogICAgXSwKICAgICJkbnMiOnsKICAgICAgICAic2VydmVycyI6WwogICAgICAgICAgICAiaHR0cHMrbG9jYWw6Ly84LjguOC44L2Rucy1xdWVyeSIKICAgICAgICBdCiAgICB9LAogICAgIm91dGJvdW5kcyI6WwogICAgICAgIHsKICAgICAgICAgICAgInByb3RvY29sIjoiZnJlZWRvbSIKICAgICAgICB9LAogICAgICAgIHsKICAgICAgICAgICAgInRhZyI6IldBUlAiLAogICAgICAgICAgICAicHJvdG9jb2wiOiJ3aXJlZ3VhcmQiLAogICAgICAgICAgICAic2V0dGluZ3MiOnsKICAgICAgICAgICAgICAgICJzZWNyZXRLZXkiOiJZRllPQWRidzFiS1RIbE5OaSthRWpCTTNCTzd1bnVGQzVyT2tNUkF6OVhZPSIsCiAgICAgICAgICAgICAgICAiYWRkcmVzcyI6WwogICAgICAgICAgICAgICAgICAgICIxNzIuMTYuMC4yLzMyIiwKICAgICAgICAgICAgICAgICAgICAiMjYwNjo0NzAwOjExMDo4YTM2OmRmOTI6MTAyYTo5NjAyOmZhMTgvMTI4IgogICAgICAgICAgICAgICAgXSwKICAgICAgICAgICAgICAgICJwZWVycyI6WwogICAgICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICAgICAgInB1YmxpY0tleSI6ImJtWE9DK0YxRnhFTUY5ZHlpSzJINS8xU1V0ekgwSnVWbzUxaDJ3UGZneW89IiwKICAgICAgICAgICAgICAgICAgICAgICAgImFsbG93ZWRJUHMiOlsKICAgICAgICAgICAgICAgICAgICAgICAgICAgICIwLjAuMC4wLzAiLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgIjo6LzAiCiAgICAgICAgICAgICAgICAgICAgICAgIF0sCiAgICAgICAgICAgICAgICAgICAgICAgICJlbmRwb2ludCI6IjE2Mi4xNTkuMTkzLjEwOjI0MDgiCiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgXSwKICAgICAgICAgICAgICAgICJyZXNlcnZlZCI6Wzc4LCAxMzUsIDc2XSwKICAgICAgICAgICAgICAgICJtdHUiOjEyODAKICAgICAgICAgICAgfQogICAgICAgIH0KICAgIF0sCiAgICAicm91dGluZyI6ewogICAgICAgICJkb21haW5TdHJhdGVneSI6IkFzSXMiLAogICAgICAgICJydWxlcyI6WwogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAidHlwZSI6ImZpZWxkIiwKICAgICAgICAgICAgICAgICJkb21haW4iOlsKICAgICAgICAgICAgICAgICAgICAiZG9tYWluOm9wZW5haS5jb20iLAogICAgICAgICAgICAgICAgICAgICJkb21haW46YWkuY29tIgogICAgICAgICAgICAgICAgXSwKICAgICAgICAgICAgICAgICJvdXRib3VuZFRhZyI6IldBUlAiCiAgICAgICAgICAgIH0KICAgICAgICBdCiAgICB9Cn0KRU9GCn0KCmFyZ29fdHlwZSgpIHsKICBpZiBbIC16ICIkQVJHT19BVVRIIiBdICYmIFsgLXogIiRBUkdPX0RPTUFJTiIgXTsgdGhlbgogICAgZWNobyAiQVJHT19BVVRIIG9yIEFSR09fRE9NQUlOIGlzIGVtcHR5LCB1c2UgUXVpY2sgVHVubmVscyIgPiAvZGV2L251bGwKICAgIHJldHVybgogIGZpCgogIGlmIFsgLW4gIiQoZWNobyAiJEFSR09fQVVUSCIgfCBncmVwIFR1bm5lbFNlY3JldCkiIF07IHRoZW4KICAgIGVjaG8gJEFSR09fQVVUSCA+ICR7RklMRV9QQVRIfS90dW5uZWwuanNvbgogICAgY2F0ID4gJHtGSUxFX1BBVEh9L3R1bm5lbC55bWwgPDwgRU9GCnR1bm5lbD0kKGVjaG8gIiRBUkdPX0FVVEgiIHwgY3V0IC1kXCIgLWYxMikKY3JlZGVudGlhbHMtZmlsZTogJHtGSUxFX1BBVEh9L3R1bm5lbC5qc29uCnByb3RvY29sOiBodHRwMgoKaW5ncmVzczoKICAtIGhvc3RuYW1lOiAkQVJHT19ET01BSU4KICAgIHNlcnZpY2U6IGh0dHA6Ly9sb2NhbGhvc3Q6ICRWX1BPUlQKICAgIG9yaWdpblJlcXVlc3Q6CiAgICAgIG5vVExTVmVyaWZ5OiB0cnVlCiAgLSBzZXJ2aWNlOiBodHRwX3N0YXR1czo0MDQKRU9GCiAgZWxzZQogICAgZWNobyAiQVJHT19BVVRIIE1pc21hdGNoIFR1bm5lbFNlY3JldCIgPiAvZGV2L251bGwKICBmaQp9CgphcmdzKCkgewppZiBbIC1lICR7RklMRV9QQVRIfS9zZXJ2ZXIgXSAmJiBbICR7b3BlbnNlcnZlcn0gLWVxIDEgXTsgdGhlbgogIGlmIFsgLW4gIiQoZWNobyAiJEFSR09fQVVUSCIgfCBncmVwICdeW0EtWjAtOWEtej1dXHsxMjAsMjUwXH0kJykiIF07IHRoZW4KICAgIGFyZ3M9InR1bm5lbCAtLWVkZ2UtaXAtdmVyc2lvbiBhdXRvIC0tcHJvdG9jb2wgaHR0cDIgLS1sb2dmaWxlICR7RklMRV9QQVRIfS9ib290LmxvZyBydW4gLS11cmwgaHR0cDovL2xvY2FsaG9zdDokVl9QT1JUIC0tdG9rZW4gJHtBUkdPX0FVVEh9IgogIGVsaWYgWyAtbiAiJChlY2hvICIkQVJHT19BVVRIIiB8IGdyZXAgVHVubmVsU2VjcmV0KSIgXTsgdGhlbgogICAgYXJncz0idHVubmVsIC0tZWRnZS1pcC12ZXJzaW9uIGF1dG8gLS1jb25maWcgdHVubmVsLnltbCBydW4iCiAgZWxzZQogICAgYXJncz0idHVubmVsIC0tZWRnZS1pcC12ZXJzaW9uIGF1dG8gLS1wcm90b2NvbCBodHRwMiAtLW5vLWF1dG91cGRhdGUgLS1sb2dmaWxlICR7RklMRV9QQVRIfS9ib290LmxvZyAtLXVybCBodHRwOi8vbG9jYWxob3N0OiRWX1BPUlQiCiAgZmkKZmkKfQoKZ2VuZXJhdGVfY29uZmlnCmFyZ29fdHlwZQphcmdzCgojIHJ1bgpydW4oKSB7CiAgc2VydmVyX3JhbmRvbW5lc3M9JCh0ciAtZGMgJ0EtWmEtejAtOScgPC9kZXYvdXJhbmRvbSB8IGhlYWQgLWMgNCkKICBkYXRhX3JhbmRvbW5lc3M9JCh0ciAtZGMgJ0EtWmEtejAtOScgPC9kZXYvdXJhbmRvbSB8IGhlYWQgLWMgNSkKICBuZXpfcmFuZG9tbmVzcz0kKHRyIC1kYyAnQS1aYS16MC05JyA8L2Rldi91cmFuZG9tIHwgaGVhZCAtYyA2KQoKICBpZiBbIC1lICR7RklMRV9QQVRIfS9zZXJ2ZXIgXSAmJiBbICR7b3BlbnNlcnZlcn0gLWVxIDEgXTsgdGhlbgogICAgbXYgJHtGSUxFX1BBVEh9L3NlcnZlciAke0ZJTEVfUEFUSH0vJHtzZXJ2ZXJfcmFuZG9tbmVzc30KICAgICR7RklMRV9QQVRIfS8kc2VydmVyX3JhbmRvbW5lc3MgJGFyZ3MgPi9kZXYvbnVsbCAyPiYxICYKICBmaQoKICBtdiAke0ZJTEVfUEFUSH0vZGF0YSAke0ZJTEVfUEFUSH0vJHtkYXRhX3JhbmRvbW5lc3N9CiAgJHtGSUxFX1BBVEh9LyRkYXRhX3JhbmRvbW5lc3MgcnVuIC1jICR7RklMRV9QQVRIfS9vdXQuanNvbiA+L2Rldi9udWxsIDI+JjEgJgoKICBpZiBbIC1uICIke05FWkhBX1NFUlZFUn0iIF0gJiYgWyAtbiAiJHtORVpIQV9LRVl9IiBdOyB0aGVuCiAgICB0bHNQb3J0cz0oIjQ0MyIgIjg0NDMiICIyMDk2IiAiMjA4NyIgIjIwODMiICIyMDUzIikKICAgIGlmIFtbICIgJHt0bHNQb3J0c1tAXX0gIiA9fiAiICR7TkVaSEFfUE9SVH0gIiBdXTsgdGhlbgogICAgICBORVpIQV9UTFM9Ii0tdGxzIgogICAgZWxzZQogICAgICBORVpIQV9UTFM9IiIKICAgIGZpCiAgICBtdiAke0ZJTEVfUEFUSH0vYWdlbnQgJHtGSUxFX1BBVEh9LyR7bmV6X3JhbmRvbW5lc3N9CiAgICAke0ZJTEVfUEFUSH0vJG5lel9yYW5kb21uZXNzIC1zICR7TkVaSEFfU0VSVkVSfToke05FWkhBX1BPUlR9IC1wICR7TkVaSEFfS0VZfSAke05FWkhBX1RMU30gPi9kZXYvbnVsbCAyPiYxICYKICBmaQp9CgpydW4KCnNsZWVwIDMwCgojIGlwIGFuZCBjb3VudHJ5CmV4cG9ydCBzZXJ2ZXJfaXA9JChjdXJsIC1zIGh0dHBzOi8vc3BlZWQuY2xvdWRmbGFyZS5jb20vbWV0YSB8IHRyICcsJyAnXG4nIHwgZ3JlcCAtRSAnImNsaWVudElwIlxzKjpccyoiJyB8IHNlZCAncy8uKiJjbGllbnRJcCJccyo6XHMqIlwoW14iXSpcKSIuKi9cMS8nKQojIGV4cG9ydCBzZXJ2ZXJfaXA9JChjdXJsIC1zIGh0dHBzOi8vaXBpbmZvLmlvL2lwKQpleHBvcnQgY291bnRyeV9hYmJyZXZpYXRpb249JChjdXJsIC1zIGh0dHBzOi8vc3BlZWQuY2xvdWRmbGFyZS5jb20vbWV0YSB8IHRyICcsJyAnXG4nIHwgZ3JlcCAtRSAnImNvdW50cnkiXHMqOlxzKiInIHwgc2VkICdzLy4qImNvdW50cnkiXHMqOlxzKiJcKFteIl0qXCkiLiovXDEvJykKCiMgbGlzdApsaXN0KCkgewogIGlmIFsgLXogIiRBUkdPX0FVVEgiIF0gJiYgWyAteiAiJEFSR09fRE9NQUlOIiBdOyB0aGVuCiAgICBbIC1zICR7RklMRV9QQVRIfS9ib290LmxvZyBdICYmIGV4cG9ydCBBUkdPX0RPTUFJTj0kKGNhdCAke0ZJTEVfUEFUSH0vYm9vdC5sb2cgfCBncmVwIC1vICJpbmZvLipodHRwczovLy4qdHJ5Y2xvdWRmbGFyZS5jb20iIHwgc2VkICJzQC4qaHR0cHM6Ly9AQGciIHwgdGFpbCAtbiAxKQogIGZpCgogICMgb3BlbnNlcnZlcuS4jeetieS6jjEKICBpZiBbICR7b3BlbnNlcnZlcn0gLW5lIDEgXTsgdGhlbgogICAgZWNobyAiUGxlYXNlIHNldCB1cCB0aGUgY2YgcmV2ZXJzZSBwcm94eSBkb21haW4gbmFtZSEiCiAgICBleHBvcnQgQVJHT19ET01BSU49IiRNWV9ET01BSU4iCiAgZmkKClZNRVNTPSJ7IFwidlwiOiBcIjJcIiwgXCJwc1wiOiBcInZtZXNzLSR7Y291bnRyeV9hYmJyZXZpYXRpb259LSR7U1VCX05BTUV9XCIsIFwiYWRkXCI6IFwiJHtDRl9JUH1cIiwgXCJwb3J0XCI6IFwiJHtDRlBPUlR9XCIsIFwiaWRcIjogXCIke1VVSUR9XCIsIFwiYWlkXCI6IFwiMFwiLCBcInNjeVwiOiBcIm5vbmVcIiwgXCJuZXRcIjogXCJ3c1wiLCBcInR5cGVcIjogXCJub25lXCIsIFwiaG9zdFwiOiBcIiR7QVJHT19ET01BSU59XCIsIFwicGF0aFwiOiBcIi8ke1ZNRVNTX1dTUEFUSH0/ZWQ9MjA0OFwiLCBcInRsc1wiOiBcInRsc1wiLCBcInNuaVwiOiBcIiR7QVJHT19ET01BSU59XCIsIFwiYWxwblwiOiBcIlwiIH0iCgogIGNhdCA+ICR7RklMRV9QQVRIfS9saXN0LnR4dCA8PCBBQkMKKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqCgogICAgICBJUCA6ICR7c2VydmVyX2lwfSAgICAgQ291bnRyee+8miAke2NvdW50cnlfYWJicmV2aWF0aW9ufQoKKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqCgp2bWVzczovLyQoZWNobyAiJFZNRVNTIiB8IGJhc2U2NCB8IHRyIC1kICdcbicpCgp2bGVzczovLyR7VVVJRH1AJHtDRl9JUH06JHtDRlBPUlR9P2hvc3Q9JHtBUkdPX0RPTUFJTn0mcGF0aD0lMkYke1ZMRVNTX1dTUEFUSH0lM0ZlZCUzRDIwNDgmdHlwZT13cyZlbmNyeXB0aW9uPW5vbmUmc2VjdXJpdHk9dGxzJnNuaT0ke0FSR09fRE9NQUlOfSN2bGVzcy0ke2NvdW50cnlfYWJicmV2aWF0aW9ufS0ke1NVQl9OQU1FfQoKKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqCkFCQwoKICBjYXQgPiAke0ZJTEVfUEFUSH0vZW5jb2RlLnR4dCA8PCBFT0YKdm1lc3M6Ly8kKGVjaG8gIiRWTUVTUyIgfCBiYXNlNjQgfCB0ciAtZCAnXG4nKQp2bGVzczovLyR7VVVJRH1AJHtDRl9JUH06JHtDRlBPUlR9P2hvc3Q9JHtBUkdPX0RPTUFJTn0mcGF0aD0lMkYke1ZMRVNTX1dTUEFUSH0lM0ZlZCUzRDIwNDgmdHlwZT13cyZlbmNyeXB0aW9uPW5vbmUmc2VjdXJpdHk9dGxzJnNuaT0ke0FSR09fRE9NQUlOfSN2bGVzcy0ke2NvdW50cnlfYWJicmV2aWF0aW9ufS0ke1NVQl9OQU1FfQpFT0YKCiAgYmFzZTY0ICR7RklMRV9QQVRIfS9lbmNvZGUudHh0IHwgdHIgLWQgJ1xuJyA+ICR7RklMRV9QQVRIfS9zdWIudHh0CiAgcm0gJHtGSUxFX1BBVEh9L2VuY29kZS50eHQKfQoKIyB1cAppZiBbIC16ICIkU1VCX1VSTCIgXTsgdGhlbgogIGxpc3QKZWxzZQogIGxpc3QKICBiYXNoICR7RklMRV9QQVRIfS91cC5zaCA+L2Rldi9udWxsIDI+JjEgJgpmaQo=" | base64 -d | bash
+hint() { echo -e "\033[33m\033[01m$*\033[0m"; }   # yellow
+
+if [ ! -d "$FILE_PATH" ]; then
+  mkdir -p "$FILE_PATH"
+fi
+
+cleanup_files() {
+  rm -rf ${FILE_PATH}/*.log ${FILE_PATH}/*.json ${FILE_PATH}/*.txt ${FILE_PATH}/*.sh ${FILE_PATH}/tunnel.*
+}
+
+# Download Dependency Files
+set_download_url() {
+  local program_name="$1"
+  local default_url="$2"
+  local x64_url="$3"
+
+  if [ "$(uname -m)" = "x86_64" ] || [ "$(uname -m)" = "amd64" ] || [ "$(uname -m)" = "x64" ]; then
+    download_url="$x64_url"
+  else
+    download_url="$default_url"
+  fi
+}
+
+download_program() {
+  local program_name="$1"
+  local default_url="$2"
+  local x64_url="$3"
+
+  set_download_url "$program_name" "$default_url" "$x64_url"
+
+  if [ ! -f "$program_name" ]; then
+    if [ -n "$download_url" ]; then
+      echo "Downloading $program_name..." > /dev/null
+      # wget -q -O "$program_name" "$download_url"
+      curl -sSL "$download_url" -o "$program_name"
+      echo "Downloaded $program_name" > /dev/null
+    else
+      echo "Skipping download for $program_name" > /dev/null
+    fi
+  else
+    echo "$program_name already exists, skipping download" > /dev/null
+  fi
+}
+
+initialize_downloads() {
+  if [ -n "${NEZHA_SERVER}" ] && [ -n "${NEZHA_KEY}" ]; then
+    download_program "${FILE_PATH}/agent" "https://github.com/kahunama/myfile/releases/download/main/nezha-agent_arm" "https://github.com/kahunama/myfile/releases/download/main/nezha-agent"
+    chmod +x ${FILE_PATH}/agent
+    sleep 3
+  fi
+
+  download_program "${FILE_PATH}/data" "https://github.com/mytcgd/myfiles/releases/download/main/xray_arm" "https://github.com/mytcgd/myfiles/releases/download/main/xray"
+  chmod +x ${FILE_PATH}/data
+  sleep 3
+
+  if [ ${openserver} -eq 1 ]; then
+    download_program "${FILE_PATH}/server" "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64" "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64"
+    chmod +x ${FILE_PATH}/server
+    sleep 3
+  fi
+
+  if [ -n "${SUB_URL}" ]; then
+    download_program "${FILE_PATH}/up.sh" "https://raw.githubusercontent.com/mytcgd/myfiles/main/my/x/up_s.sh" "https://raw.githubusercontent.com/mytcgd/myfiles/main/my/x/up_s.sh"
+    chmod +x ${FILE_PATH}/up.sh
+    sleep 3
+  fi
+}
+
+# check_chatgpt
+check_chatgpt() {
+  local SUPPORT_COUNTRY=(AD AE AF AG AL AM AO AR AT AU AZ BA BB BD BE BF BG BH BI BJ BN BO BR BS BT BW BZ CA CD CF CG CH CI CL CM CO CR CV CY CZ DE DJ DK DM DO DZ EC EE EG ER ES ET FI FJ FM FR GA GB GD GE GH GM GN GQ GR GT GW GY HN HR HT HU ID IE IL IN IQ IS IT JM JO JP KE KG KH KI KM KN KR KW KZ LA LB LC LI LK LR LS LT LU LV LY MA MC MD ME MG MH MK ML MM MN MR MT MU MV MW MX MY MZ NA NE NG NI NL NO NP NR NZ OM PA PE PG PH PK PL PS PT PW PY QA RO RS RW SA SB SC SD SE SG SI SK SL SM SN SO SR SS ST SV SZ TD TG TH TJ TL TM TN TO TR TT TV TW TZ UA UG US UY UZ VA VC VN VU WS YE ZA ZM ZW)
+  [[ "${SUPPORT_COUNTRY[@]}" =~ $(curl -s -k -m 2 https://chat.openai.com/cdn-cgi/trace | awk -F '=' '/loc/{print $2}') ]] && echo 'unlock' || echo 'ban'
+  # [[ "${SUPPORT_COUNTRY[@]}" =~ $(wget --no-check-certificate -qO- --tries=3 --timeout=2 https://chat.openai.com/cdn-cgi/trace | awk -F '=' '/loc/{print $2}') ]] && echo 'unlock' || echo 'ban'
+}
+
+# my_config
+my_config() {
+  # Check whether chatGPT is unlocked
+  if [ "$(check_chatgpt)" = 'unlock' ]; then
+    CHAT_GPT_OUT="direct"
+  else
+    CHAT_GPT_OUT="WARP"
+  fi
+
+  if [[ ! "$SERVER_IP" =~ : ]]; then
+    WARP_ENDPOINT=162.159.193.10
+  else
+    WARP_ENDPOINT=2606:4700:d0::a29f:c101
+  fi
+
+  generate_config() {
+  cat > ${FILE_PATH}/out.json << EOF
+{
+    "log": {
+        "access": "/dev/null",
+        "error": "/dev/null",
+        "loglevel": "none"
+    },
+    "dns": {
+        "servers": [
+            "https+local://8.8.8.8/dns-query"
+        ]
+    },
+    "inbounds": [
+        {
+            "port": $V_PORT,
+            "protocol": "vless",
+            "settings": {
+                "clients": [
+                    {
+                        "id": "${UUID}",
+                        "flow": "xtls-rprx-vision"
+                    }
+                ],
+                "decryption": "none",
+                "fallbacks": [
+                    {
+                        "path": "/${VLESS_WSPATH}",
+                        "dest": 3002
+                    },
+                    {
+                        "path": "/${VMESS_WSPATH}",
+                        "dest": 3003
+                    }
+                ]
+            },
+            "streamSettings": {
+                "network": "tcp"
+            }
+        },
+        {
+            "port": 3002,
+            "listen": "127.0.0.1",
+            "protocol": "vless",
+            "settings": {
+                "clients": [
+                    {
+                        "id": "${UUID}",
+                        "level": 0
+                    }
+                ],
+                "decryption": "none"
+            },
+            "streamSettings": {
+                "network": "ws",
+                "security": "none",
+                "wsSettings": {
+                    "path": "/${VLESS_WSPATH}"
+                }
+            },
+            "sniffing": {
+                "enabled": true,
+                "destOverride": [
+                    "http",
+                    "tls",
+                    "quic"
+                ],
+                "metadataOnly": false
+            }
+        },
+        {
+            "port": 3003,
+            "listen": "127.0.0.1",
+            "protocol": "vmess",
+            "settings": {
+                "clients": [
+                    {
+                        "id": "${UUID}",
+                        "alterId": 0
+                    }
+                ]
+            },
+            "streamSettings": {
+                "network": "ws",
+                "wsSettings": {
+                    "path": "/${VMESS_WSPATH}"
+                }
+            },
+            "sniffing": {
+                "enabled": true,
+                "destOverride": [
+                    "http",
+                    "tls",
+                    "quic"
+                ],
+                "metadataOnly": false
+            }
+        }
+    ],
+    "outbounds": [
+        {
+            "protocol": "freedom",
+            "tag": "direct"
+        },
+        {
+            "tag": "WARP",
+            "protocol": "wireguard",
+            "settings": {
+                "secretKey": "YFYOAdbw1bKTHlNNi+aEjBM3BO7unuFC5rOkMRAz9XY=",
+                "address": [
+                    "172.16.0.2/32",
+                    "2606:4700:110:8a36:df92:102a:9602:fa18/128"
+                ],
+                "peers": [
+                    {
+                        "publicKey": "bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=",
+                        "allowedIPs": [
+                            "0.0.0.0/0",
+                            "::/0"
+                        ],
+                        "endpoint": "${WARP_ENDPOINTCHAT_GPT_OUT}:2408"
+                    }
+                ],
+                "reserved": [78, 135, 76],
+                "mtu": 1280
+            }
+        }
+    ],
+    "routing": {
+        "domainStrategy": "AsIs",
+        "rules": [
+            {
+                "type": "field",
+                "domain": [
+                    "domain:openai.com",
+                    "domain:ai.com",
+                    "domain:chat.openai.com",
+                    "domain:chatgpt.com"
+                ],
+                "outboundTag": "${CHAT_GPT_OUT}"
+            }
+        ]
+    }
+}
+EOF
+  }
+
+  argo_type() {
+    if [ -e "${FILE_PATH}/server" ] && [ -z "$ARGO_AUTH" ] && [ -z "$ARGO_DOMAIN" ]; then
+      echo "ARGO_AUTH or ARGO_DOMAIN is empty, use Quick Tunnels" > /dev/null
+      return
+    fi
+
+    if [ -e "${FILE_PATH}/server" ] && [ -n "$(echo "$ARGO_AUTH" | grep TunnelSecret)" ]; then
+      echo $ARGO_AUTH > ${FILE_PATH}/tunnel.json
+      cat > ${FILE_PATH}/tunnel.yml << EOF
+tunnel=$(echo "$ARGO_AUTH" | cut -d\" -f12)
+credentials-file: ${FILE_PATH}/tunnel.json
+protocol: http2
+
+ingress:
+  - hostname: $ARGO_DOMAIN
+    service: http://localhost: $V_PORT
+    originRequest:
+      noTLSVerify: true
+  - service: http_status:404
+EOF
+    else
+      echo "ARGO_AUTH Mismatch TunnelSecret" > /dev/null
+    fi
+  }
+
+  args() {
+    if [ ${openserver} -eq 1 ] && [ -e "${FILE_PATH}/server" ]; then
+      if [ -n "$(echo "$ARGO_AUTH" | grep '^[A-Z0-9a-z=]\{120,250\}$')" ]; then
+        args="tunnel --edge-ip-version auto --no-autoupdate --protocol http2 run --token ${ARGO_AUTH}"
+      elif [ -n "$(echo "$ARGO_AUTH" | grep TunnelSecret)" ]; then
+        args="tunnel --edge-ip-version auto --config ${FILE_PATH}/tunnel.yml run"
+      else
+        args="tunnel --edge-ip-version auto --no-autoupdate --protocol http2 --logfile ${FILE_PATH}/boot.log --loglevel info --url http://localhost:${V_PORT}"
+      fi
+    fi
+  }
+
+  generate_config
+  argo_type
+  args
+}
+
+# run
+run_server() {
+  if [ -e ${FILE_PATH}/$server_randomness ]; then
+    ${FILE_PATH}/$server_randomness $args > /dev/null 2>&1 &
+  fi
+}
+
+run_data() {
+  if [ -e ${FILE_PATH}/$data_randomness ]; then
+    ${FILE_PATH}/$data_randomness run -c ${FILE_PATH}/out.json >/dev/null 2>&1 &
+  fi
+}
+
+run_agent() {
+  if [ -n "${NEZHA_SERVER}" ] && [ -n "${NEZHA_KEY}" ] && [ -e ${FILE_PATH}/$nez_randomness ]; then
+    tlsPorts=("443" "8443" "2096" "2087" "2083" "2053")
+    if [[ " ${tlsPorts[@]} " =~ " ${NEZHA_PORT} " ]]; then
+      NEZHA_TLS="--tls"
+    else
+      NEZHA_TLS=""
+    fi
+    ${FILE_PATH}/$nez_randomness -s ${NEZHA_SERVER}:${NEZHA_PORT} -p ${NEZHA_KEY} ${NEZHA_TLS} > /dev/null 2>&1 &
+  fi
+}
+
+keep_alive() {
+  if [[ ! $(pidof $server_randomness) ]]; then
+    run_server
+    sleep 5
+    get_ip_country_code && check_hostname_change && build_urls
+    hint "$server_randomness runs again !"
+  fi
+
+  sleep 5
+
+  if [[ ! $(pidof $data_randomness) ]]; then
+    run_data
+    hint "$data_randomness runs again !"
+  fi
+
+  sleep 5
+
+  if [[ ! $(pidof $nez_randomness) ]]; then
+    run_agent
+    hint "$nez_randomness runs again !"
+  fi
+}
+
+run_processes() {
+  server_randomness=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 4)
+  data_randomness=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 5)
+  nez_randomness=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 6)
+
+  [ -e "${FILE_PATH}/server" ] && mv ${FILE_PATH}/server ${FILE_PATH}/${server_randomness} && sleep 1
+  run_server
+
+  sleep 5
+
+  [ -e "${FILE_PATH}/data" ] && mv ${FILE_PATH}/data ${FILE_PATH}/${data_randomness} && sleep 1
+  run_data
+
+  [ -e "${FILE_PATH}/agent" ] && mv ${FILE_PATH}/agent ${FILE_PATH}/${nez_randomness} && sleep 1
+  run_agent
+
+  check_hostname_change && build_urls && sleep 3
+
+  if [ -n "$SUB_URL" ] && [ -e "${FILE_PATH}/up.sh" ]; then
+    bash ${FILE_PATH}/up.sh > /dev/null 2>&1 &
+  fi
+
+  case "$openkeepalive" in
+    "1" )
+      while true
+      do
+      keep_alive
+      sleep 50
+      done
+      ;;
+  esac
+}
+
+# get IP and country
+get_ip_country_code() {
+  export SERVER_IP=$(curl -s https://speed.cloudflare.com/meta | tr ',' '\n' | grep -E '"clientIp"\s*:\s*"' | sed 's/.*"clientIp"\s*:\s*"\([^"]*\)".*/\1/')
+  # export SERVER_IP=$(curl -s https://ipinfo.io/ip)
+  # echo "${SERVER_IP}"
+
+  export country_abbreviation=$(curl -s https://speed.cloudflare.com/meta | awk -F\" '{print $26"-"$18}' | sed -e 's/ /_/g')   # Display ISP and country abbreviation
+  # export country_abbreviation=$(curl -s https://speed.cloudflare.com/meta | tr ',' '\n' | grep -E '"country"\s*:\s*"' | sed 's/.*"country"\s*:\s*"\([^"]*\)".*/\1/')   # Display country abbreviation
+  # echo "${country_abbreviation}"
+}
+
+# check_hostname
+check_hostname_change() {
+  if [ -z "$ARGO_AUTH" ] && [ -z "$ARGO_DOMAIN" ]; then
+    [ -s ${FILE_PATH}/boot.log ] && export ARGO_DOMAIN=$(cat ${FILE_PATH}/boot.log | grep -o "info.*https://.*trycloudflare.com" | sed "s@.*https://@@g" | tail -n 1)
+    # [ -s ${FILE_PATH}/boot.log ] && export ARGO_DOMAIN=$(cat ${FILE_PATH}/boot.log | grep -o "https://.*trycloudflare.com" | tail -n 1 | sed 's/https:\/\///')
+  fi
+}
+
+# build_urls
+build_urls() {
+  # openserver is not 1
+  if [ ${openserver} -ne 1 ]; then
+    echo "Please set up the cf reverse proxy domain name!"
+    export ARGO_DOMAIN="$MY_DOMAIN"
+  fi
+
+  export VMESS="{ \"v\": \"2\", \"ps\": \"vmess-${country_abbreviation}-${SUB_NAME}\", \"add\": \"${CF_IP}\", \"port\": \"${CFPORT}\", \"id\": \"${UUID}\", \"aid\": \"0\", \"scy\": \"none\", \"net\": \"ws\", \"type\": \"none\", \"host\": \"${ARGO_DOMAIN}\", \"path\": \"/${VMESS_WSPATH}?ed=2048\", \"tls\": \"tls\", \"sni\": \"${ARGO_DOMAIN}\", \"alpn\": \"\" }"
+
+  cat > ${FILE_PATH}/tmp.txt << ABC
+***************************************************
+
+      IP : ${server_ip}     Country： ${country_abbreviation}
+
+***************************************************
+
+vmess://$(echo "$VMESS" | base64 | tr -d '\n')
+
+vless://${UUID}@${CF_IP}:${CFPORT}?host=${ARGO_DOMAIN}&path=%2F${VLESS_WSPATH}%3Fed%3D2048&type=ws&encryption=none&security=tls&sni=${ARGO_DOMAIN}#vless-${country_abbreviation}-${SUB_NAME}
+
+***************************************************
+ABC
+
+  cat > ${FILE_PATH}/encode.txt << DEF
+vmess://$(echo "$VMESS" | base64 | tr -d '\n')
+vless://${UUID}@${CF_IP}:${CFPORT}?host=${ARGO_DOMAIN}&path=%2F${VLESS_WSPATH}%3Fed%3D2048&type=ws&encryption=none&security=tls&sni=${ARGO_DOMAIN}#vless-${country_abbreviation}-${SUB_NAME}
+DEF
+
+  base64 ${FILE_PATH}/encode.txt | tr -d '\n' > ${FILE_PATH}/log.txt
+  rm ${FILE_PATH}/encode.txt
+}
+
+# main
+main() {
+  echo "Server is running on port : ${SERVER_PORT}"
+  cleanup_files
+  initialize_downloads
+  get_ip_country_code
+  my_config
+  run_processes
+}
+main

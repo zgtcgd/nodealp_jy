@@ -4,8 +4,8 @@ const http = require('http');
 const fs = require('fs');
 const { spawn } = require('child_process');
 
-const listFilePath = FILE_PATH + '/list.txt';
-const subFilePath = FILE_PATH + '/sub.txt';
+const listFilePath = FILE_PATH + '/tmp.txt';
+const subFilePath = FILE_PATH + '/log.txt';
 
 const server = http.createServer((req, res) => {
   if (req.url === '/') {
@@ -43,7 +43,7 @@ const server = http.createServer((req, res) => {
   }
 });
 
-// 启动主程序
+// run
 const startScriptPath = `/app/start.sh`;
 const childProcess = spawn(startScriptPath, [], {
   detached: false,
@@ -51,5 +51,5 @@ const childProcess = spawn(startScriptPath, [], {
 });
 
 server.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`server is listening on port ${port}`);
 });
