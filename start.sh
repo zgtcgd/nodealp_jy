@@ -3,7 +3,7 @@
 # Define Environment Variables
 export V_PORT=${V_PORT:-'8080'}
 export CFPORT=${CFPORT:-'443'} # https 443 2053 2083 2087 2096 8443  # http 80 8080 8880 2052 2082 2086 2095
-export UUID=${UUID:-'de04add9-5c68-8bab-950c-08cd5320df18'}
+export UUID=${UUID:-'7160b696-dd5e-42e3-a024-145e92cec916'}
 export VMESS_WSPATH=${VMESS_WSPATH:-'startvm'}
 export VLESS_WSPATH=${VLESS_WSPATH:-'startvl'}
 export CF_IP=${CF_IP:-'ip.sb'}
