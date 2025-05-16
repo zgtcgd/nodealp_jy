@@ -3,7 +3,7 @@
 export CFPORT=${CFPORT:-'443'}
 export CF_IP=${CF_IP:-'ip.sb'}
 export FILE_PATH=${FILE_PATH:-'/tmp'}
-export VLESS_WSPATH=${VLESS_WSPATH:-'startvl'}
+export VLESS_WSPATH="$VLESS_WSPATH"
 export XHTTP_PATH="$XHTTP_PATH"
 export V_PORT=${V_PORT:-'8080'}
 export UUID=${UUID:-'7160b696-dd5e-42e3-a024-145e92cec916'}
