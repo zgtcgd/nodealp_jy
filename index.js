@@ -9,9 +9,6 @@ const server = http.createServer((req, res) => {
   if (req.url === '/') {
     res.writeHead(200);
     res.end('hello world');
-  } else if (req.url === '/healthcheck') {
-    res.writeHead(200);
-    res.end('ok');
   } else if (req.url === '/sub') {
     fs.readFile(subFilePath, 'utf8', (error, data) => {
       if (error) {
