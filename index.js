@@ -1,18 +1,30 @@
 const port = process.env.PORT || 3000;
-const FILE_PATH = process.env.FILE_PATH || '/tmp';
+const FILE_PATH = process.env.FILE_PATH || './.npm';
 const http = require('http');
 const fs = require('fs');
 const { spawn } = require('child_process');
-const openserver = process.env.openserver || '1';
+const openhttp = process.env.openhttp || '1';
 
-// run
-const startScriptPath = `/app/start.sh`;
-const childProcess = spawn(startScriptPath, [], {
-    detached: false,
-    stdio: 'inherit',
+const startScriptPath = `./start.sh`;
+fs.chmodSync(startScriptPath, 0o755);
+const startScript = spawn(startScriptPath, [], {
+    env: {
+        ...process.env,
+        openhttp: openhttp
+    }
+});
+startScript.stdout.on('data', (data) => {
+    console.log(`${data}`);
+});
+startScript.stderr.on('data', (data) => {
+    console.error(`${data}`);
+});
+startScript.on('error', (error) => {
+    console.error(`boot error: ${error}`);
+    process.exit(1);
 });
 
-if (openserver === '1') {
+if (openhttp === '1') {
     const subFilePath = FILE_PATH + '/log.txt';
     const server = http.createServer((req, res) => {
         if (req.url === '/') {
@@ -36,6 +48,6 @@ if (openserver === '1') {
     server.listen(port, () => {
         console.log(`server is listening on port ${port}`);
     });
-} else if (openserver === '0') {
+} else if (openhttp === '0') {
     console.log(`server is listening on port ${port}`);
 }
