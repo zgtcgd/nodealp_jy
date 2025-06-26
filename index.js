@@ -1,11 +1,11 @@
-const port = process.env.PORT || 3000;
-const FILE_PATH = process.env.FILE_PATH || '/tmp';
+const port = process.env.PORT || process.env.SERVER_PORT || 3000;
+const FILE_PATH = process.env.FILE_PATH || './.npm';
 const http = require('http');
 const fs = require('fs');
 const { spawn } = require('child_process');
-const openhttp = process.env.openhttp || '1';
+const openhttp = process.env.openhttp || '1'; // 0 or 1
 
-const startScriptPath = `/app/start.sh`;
+const startScriptPath = `./start.sh`;
 fs.chmodSync(startScriptPath, 0o755);
 const startScript = spawn(startScriptPath, [], {
     env: {
