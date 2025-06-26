@@ -2,13 +2,14 @@ FROM node:alpine
 
 WORKDIR /app
 
-COPY app.js package.json start.sh /app/
+COPY package.json ./
+RUN apk update && \
+    apk add --no-cache bash wget curl procps && \
+    npm install
+
+COPY app.js start.sh ./
+RUN chmod +x start.sh
 
 EXPOSE 3000
 
-RUN apk update && \
-    apk add --no-cache bash wget curl openssl procps && \
-    chmod -v 755 start.sh && \
-    npm install
-
-ENTRYPOINT [ "node", "/app/app.js" ]
+ENTRYPOINT [ "node", "app.js" ]
