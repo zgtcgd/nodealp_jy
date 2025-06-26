@@ -1,5 +1,5 @@
 const port = process.env.PORT || process.env.SERVER_PORT || 3000;
-const FILE_PATH = process.env.FILE_PATH || './.npm';
+const FILE_PATH = process.env.FILE_PATH || '/tmp';
 const http = require('http');
 const fs = require('fs');
 const { spawn } = require('child_process');
