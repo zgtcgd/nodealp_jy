@@ -1,22 +1,27 @@
 const port = process.env.PORT || 3000;
 const FILE_PATH = process.env.FILE_PATH || '/tmp';
-const UUID = process.env.UUID;
 const http = require('http');
-const fs = require("fs");
-const path = require("path");
+const UUID = process.env.UUID;
+const fs = require('fs');
 const { spawn } = require('child_process');
 
-const subfilePath = path.join(FILE_PATH, "log.txt");
+const subFilePath = FILE_PATH + '/log.txt';
 const server = http.createServer((req, res) => {
     if (req.url === '/') {
         res.writeHead(200);
         res.end('hello world');
+    } else if (req.url === '/healthcheck') {
+        res.writeHead(200);
+        res.end('ok');
     } else if (req.url === `/${UUID}`) {
-        fs.readFile(subfilePath, (err, data) => {
-            if (err) {
-                return res.status(500).send('Error reading file');
+        fs.readFile(subFilePath, 'utf8', (error, data) => {
+            if (error) {
+                res.writeHead(500);
+                res.end('Error reading file');
+            } else {
+                res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
+                res.end(data);
             }
-            res.type("txt").send(data);
         });
     } else {
         res.writeHead(404);
