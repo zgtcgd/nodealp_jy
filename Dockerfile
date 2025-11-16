@@ -2,6 +2,10 @@ FROM node:alpine
 
 WORKDIR /app
 
+ARG PORT=3000
+ENV PORT=$PORT
+EXPOSE $PORT
+
 COPY package.json ./
 RUN apk update && \
     apk add --no-cache bash wget curl procps && \
@@ -9,7 +13,5 @@ RUN apk update && \
 
 COPY app.js start.sh ./
 RUN chmod +x start.sh
-
-EXPOSE 3000
 
 ENTRYPOINT [ "node", "app.js" ]
